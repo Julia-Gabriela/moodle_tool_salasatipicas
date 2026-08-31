@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/salasatipicas/db" VERSION="2026083100" COMMENT="XMLDB file for tool_salasatipicas">
+  <TABLES>
+    <TABLE NAME="tool_atyp_dep_cat" COMMENT="Configured destination categories for dependency courses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="templatecourseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" />
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="name_uix" UNIQUE="true" FIELDS="name" />
+        <INDEX NAME="active_ix" UNIQUE="false" FIELDS="active" />
+        <INDEX NAME="categoryid_ix" UNIQUE="false" FIELDS="categoryid" />
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_atyp_dep_hist" COMMENT="History and processing state for dependency course creation">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+        <FIELD NAME="processnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="subject" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="period" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="studentuserid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="teacheruserid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="studentname" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" />
+        <FIELD NAME="teachername" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" />
+        <FIELD NAME="studentusername" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" />
+        <FIELD NAME="teacherusername" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" />
+        <FIELD NAME="categoryconfigid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="coursecategoryid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="sourcecourseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="targetcourseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="targetfullname" TYPE="text" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="targetshortname" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" />
+        <FIELD NAME="backupid" TYPE="char" LENGTH="64" NOTNULL="true" DEFAULT="" SEQUENCE="false" />
+        <FIELD NAME="restoreid" TYPE="char" LENGTH="64" NOTNULL="true" DEFAULT="" SEQUENCE="false" />
+        <FIELD NAME="source" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="manual" SEQUENCE="false" />
+        <FIELD NAME="status" TYPE="char" LENGTH="30" NOTNULL="true" DEFAULT="queued" SEQUENCE="false" />
+        <FIELD NAME="retrycount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="message" TYPE="text" NOTNULL="false" SEQUENCE="false" />
+        <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="status_ix" UNIQUE="false" FIELDS="status" />
+        <INDEX NAME="shortname_ix" UNIQUE="false" FIELDS="targetshortname" />
+        <INDEX NAME="student_ix" UNIQUE="false" FIELDS="studentuserid" />
+        <INDEX NAME="teacher_ix" UNIQUE="false" FIELDS="teacheruserid" />
+        <INDEX NAME="createdby_ix" UNIQUE="false" FIELDS="createdby" />
+        <INDEX NAME="timecreated_ix" UNIQUE="false" FIELDS="timecreated" />
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_atyp_dep_part" COMMENT="Participants and role assignments requested for each dependency course">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+        <FIELD NAME="historyid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="username" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" />
+        <FIELD NAME="fullname" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" />
+        <FIELD NAME="participanttype" TYPE="char" LENGTH="30" NOTNULL="true" DEFAULT="student" SEQUENCE="false" />
+        <FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+        <KEY NAME="history_fk" TYPE="foreign" FIELDS="historyid" REFTABLE="tool_atyp_dep_hist" REFFIELDS="id" />
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="user_ix" UNIQUE="false" FIELDS="userid" />
+        <INDEX NAME="type_ix" UNIQUE="false" FIELDS="participanttype" />
+        <INDEX NAME="role_ix" UNIQUE="false" FIELDS="roleid" />
+        <INDEX NAME="history_user_role_uix" UNIQUE="true" FIELDS="historyid, userid, roleid" />
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_atyp_rea_cat" COMMENT="Configured destination categories for REA courses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="templatecourseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" />
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="name_uix" UNIQUE="true" FIELDS="name" />
+        <INDEX NAME="category_ix" UNIQUE="false" FIELDS="categoryid" />
+        <INDEX NAME="active_ix" UNIQUE="false" FIELDS="active" />
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_atyp_rea_hist" COMMENT="REA creation requests and operational history">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+        <FIELD NAME="studentdisplayname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="courseprogram" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="phone" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" />
+        <FIELD NAME="contactemail" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="licensestart" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="licenseend" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="period" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="subjectsjson" TYPE="text" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="sourcecourseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="coursecategoryid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="categoryconfigid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="targetcourseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="targetfullname" TYPE="text" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="targetshortname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="source" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="manual" SEQUENCE="false" />
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="queued" SEQUENCE="false" />
+        <FIELD NAME="message" TYPE="text" NOTNULL="false" SEQUENCE="false" />
+        <FIELD NAME="backupid" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" />
+        <FIELD NAME="restoreid" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" />
+        <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="status_ix" UNIQUE="false" FIELDS="status" />
+        <INDEX NAME="targetshort_ix" UNIQUE="false" FIELDS="targetshortname" />
+        <INDEX NAME="targetcourse_ix" UNIQUE="false" FIELDS="targetcourseid" />
+        <INDEX NAME="createdby_ix" UNIQUE="false" FIELDS="createdby" />
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tool_atyp_rea_part" COMMENT="Moodle users and roles enrolled by one REA request">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+        <FIELD NAME="historyid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="username" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="fullname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="participanttype" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+        <KEY NAME="history_fk" TYPE="foreign" FIELDS="historyid" REFTABLE="tool_atyp_rea_hist" REFFIELDS="id" />
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid_ix" UNIQUE="false" FIELDS="userid" />
+        <INDEX NAME="roleid_ix" UNIQUE="false" FIELDS="roleid" />
+        <INDEX NAME="type_ix" UNIQUE="false" FIELDS="participanttype" />
+        <INDEX NAME="history_user_role_uix" UNIQUE="true" FIELDS="historyid, userid, roleid" />
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
