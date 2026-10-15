@@ -15,16 +15,16 @@ $PAGE->set_heading(get_string('rea_categoryconfig', 'tool_salasatipicas'));
 $PAGE->requires->css(new moodle_url('/admin/tool/salasatipicas/styles.css'));
 $form = new category_form($PAGE->url);
 if ($id) {
-    $record = $DB->get_record('tool_atyp_rea_cat', ['id'=>$id], '*', MUST_EXIST);
+    $record = $DB->get_record('tool_salasat_rea_cat', ['id'=>$id], '*', MUST_EXIST);
     $form->set_data($record);
 }
 if ($form->is_cancelled()) { redirect(new moodle_url('/admin/tool/salasatipicas/rea_configuration.php')); }
 if ($data = $form->get_data()) {
     $now = time();
     if (!empty($data->id)) {
-        $data->timemodified = $now; $DB->update_record('tool_atyp_rea_cat', $data);
+        $data->timemodified = $now; $DB->update_record('tool_salasat_rea_cat', $data);
     } else {
-        $data->timecreated = $now; $data->timemodified = $now; $DB->insert_record('tool_atyp_rea_cat', $data);
+        $data->timecreated = $now; $data->timemodified = $now; $DB->insert_record('tool_salasat_rea_cat', $data);
     }
     redirect(new moodle_url('/admin/tool/salasatipicas/rea_configuration.php'), get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
 }

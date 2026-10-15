@@ -166,7 +166,7 @@ if ($data = $manualform->get_data()) {
         'time' => time(),
     ];
     $reviewurl = new moodle_url('/admin/tool/salasatipicas/dependency.php', ['previewtoken' => $manualtoken]);
-    $reviewurl->set_anchor('salasat-dep-confirmation');
+    $reviewurl->set_anchor('salasdep-confirmation');
     redirect($reviewurl);
 }
 
@@ -211,7 +211,7 @@ foreach (['tool_salasatipicas_dep_manual', 'tool_salasatipicas_dep_import'] as $
 
 echo $OUTPUT->header();
 
-echo html_writer::start_div('salasat-dep-toolbar');
+echo html_writer::start_div('salasdep-toolbar');
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/index.php'), '← ' . get_string('backtocentral', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/dependency_configuration.php'),
     get_string('dep_settingsbutton', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
@@ -219,7 +219,7 @@ echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/dependency_hist
     get_string('dep_history', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::end_div();
 
-echo html_writer::div(get_string('dep_intro', 'tool_salasatipicas'), 'salasat-dep-intro');
+echo html_writer::div(get_string('dep_intro', 'tool_salasatipicas'), 'salasdep-intro');
 
 if ($queueerror !== '') {
     echo $OUTPUT->notification(get_string('dep_creationerror', 'tool_salasatipicas', s($queueerror)),
@@ -252,15 +252,15 @@ if (empty($categories)) {
 $currentpattern = manager::get_config_value('fullnamepattern', manager::DEFAULT_FULLNAME_PATTERN);
 echo html_writer::div(
     html_writer::tag('strong', get_string('dep_currentnamepattern', 'tool_salasatipicas')) . '<br>' . s($currentpattern),
-    'salasat-dep-pattern'
+    'salasdep-pattern'
 );
 
-echo html_writer::start_div('salasat-dep-grid');
-echo html_writer::start_div('salasat-dep-card');
+echo html_writer::start_div('salasdep-grid');
+echo html_writer::start_div('salasdep-card');
 $manualform->display();
 echo html_writer::end_div();
 
-echo html_writer::start_div('salasat-dep-card');
+echo html_writer::start_div('salasdep-card');
 $modellinks = html_writer::link(new moodle_url('/admin/tool/salasatipicas/dependency_download_template_xlsx.php', ['sesskey' => sesskey()]),
     get_string('dep_downloadmodelxlsx', 'tool_salasatipicas'), ['class' => 'btn btn-link p-0 mr-3']);
 $modellinks .= html_writer::link(new moodle_url('/admin/tool/salasatipicas/dependency_download_template.php', ['sesskey' => sesskey()]),
@@ -272,12 +272,12 @@ echo html_writer::end_div();
 
 // Manual validation result / final confirmation.
 if ($manualpreview) {
-    echo html_writer::start_div('salasat-dep-preview mt-4', ['id' => 'salasat-dep-confirmation']);
+    echo html_writer::start_div('salasdep-preview mt-4', ['id' => 'salasdep-confirmation']);
     echo html_writer::tag('h3', $creationenabled
         ? get_string('dep_confirmmanualtitle', 'tool_salasatipicas')
         : get_string('dep_manualvalidationtitle', 'tool_salasatipicas'));
 
-    $category = $DB->get_record('tool_atyp_dep_cat', ['id' => $manualpreview['categoryconfigid']]);
+    $category = $DB->get_record('tool_salasat_dep_cat', ['id' => $manualpreview['categoryconfigid']]);
     $table = new html_table();
     $table->head = [get_string('dep_field', 'tool_salasatipicas'), get_string('dep_value', 'tool_salasatipicas')];
     $table->data = [
@@ -302,7 +302,7 @@ if ($manualpreview) {
         echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'confirmmanual']);
         echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'token', 'value' => $manualtoken]);
         echo html_writer::tag('button', get_string('dep_confirmcreation', 'tool_salasatipicas'), [
-            'type' => 'submit', 'class' => 'btn btn-success salasat-dep-confirm-create',
+            'type' => 'submit', 'class' => 'btn btn-success salasdep-confirm-create',
         ]);
         echo html_writer::link($PAGE->url, get_string('cancel'), ['class' => 'btn btn-secondary ml-2']);
         echo html_writer::end_tag('form');
@@ -317,7 +317,7 @@ if ($manualpreview) {
 
 if ($importpreview) {
     $validcount = count(array_filter($importpreview['rows'], fn($row) => $row['valid']));
-    echo html_writer::start_div('salasat-dep-preview mt-4');
+    echo html_writer::start_div('salasdep-preview mt-4');
     echo html_writer::tag('h3', get_string('dep_importpreview', 'tool_salasatipicas'));
     echo html_writer::tag('p', get_string('dep_previewsummary', 'tool_salasatipicas', (object)[
         'valid' => $validcount,
@@ -360,7 +360,7 @@ if ($importpreview) {
         echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'confirmimport']);
         echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'token', 'value' => $importtoken]);
         echo html_writer::tag('button', get_string('dep_createvalidrows', 'tool_salasatipicas', $validcount), [
-            'type' => 'submit', 'class' => 'btn btn-success salasat-dep-confirm-create',
+            'type' => 'submit', 'class' => 'btn btn-success salasdep-confirm-create',
         ]);
         echo html_writer::end_tag('form');
     } else if ($validcount > 0) {
@@ -372,7 +372,7 @@ if ($importpreview) {
     echo html_writer::end_div();
 }
 
-$recent = $DB->get_records('tool_atyp_dep_hist', null, 'timecreated DESC', '*', 0, 8);
+$recent = $DB->get_records('tool_salasat_dep_hist', null, 'timecreated DESC', '*', 0, 8);
 if ($recent) {
     echo html_writer::tag('h3', get_string('dep_recentdependencies', 'tool_salasatipicas'), ['class' => 'mt-4']);
     $table = new html_table();

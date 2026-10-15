@@ -11,10 +11,10 @@ $PAGE->set_heading(get_string('globalhistory','tool_salasatipicas'));
 $PAGE->requires->css(new moodle_url('/admin/tool/salasatipicas/styles.css'));
 $page = optional_param('page',0,PARAM_INT); $perpage=50;
 $rows=[];
-foreach ($DB->get_records('tool_atyp_dep_hist', null, 'timecreated DESC') as $r) {
+foreach ($DB->get_records('tool_salasat_dep_hist', null, 'timecreated DESC') as $r) {
     $rows[]=(object)['type'=>'Dependência','timecreated'=>$r->timecreated,'reference'=>$r->processnumber.' — '.$r->subject,'status'=>$r->status,'message'=>$r->message,'courseid'=>$r->targetcourseid,'detailurl'=>new moodle_url('/admin/tool/salasatipicas/dependency_history.php')];
 }
-foreach ($DB->get_records('tool_atyp_rea_hist', null, 'timecreated DESC') as $r) {
+foreach ($DB->get_records('tool_salasat_rea_hist', null, 'timecreated DESC') as $r) {
     $rows[]=(object)['type'=>'REA','timecreated'=>$r->timecreated,'reference'=>$r->studentdisplayname.' — '.$r->courseprogram,'status'=>$r->status,'message'=>$r->message,'courseid'=>$r->targetcourseid,'detailurl'=>new moodle_url('/admin/tool/salasatipicas/rea_history.php')];
 }
 usort($rows, fn($a,$b)=>$b->timecreated <=> $a->timecreated);

@@ -1,15 +1,16 @@
-# Checklist de implantação
+# Checklist de homologação/produção
 
-- [ ] Backup/snapshot do ambiente conforme política local.
-- [ ] Moodle compatível com a versão mínima exigida.
-- [ ] PHP CLI disponível e executável.
-- [ ] Templates oficiais revisados.
-- [ ] Categorias de destino conferidas.
-- [ ] Papéis de aluno, professor e coordenação conferidos.
-- [ ] Método de inscrição manual habilitado.
-- [ ] Cache do Moodle limpo após instalação.
-- [ ] Uma Dependência manual criada em homologação.
-- [ ] Um lote pequeno de Dependências validado.
-- [ ] Um REA com uma disciplina validado.
-- [ ] Um REA com múltiplas disciplinas validado.
-- [ ] Navegação do Moodle permanece responsiva durante o processamento.
+- [ ] Instalar primeiro em homologação.
+- [ ] Confirmar acesso em Administração do site → Cursos → Gerenciar salas atípicas.
+- [ ] Confirmar PHP CLI `/usr/bin/php` nos dois módulos.
+- [ ] Revisar configurações e categorias de Dependências.
+- [ ] Revisar configurações, marcadores, categorias e template de REA.
+- [ ] Testar 1 Dependência manual.
+- [ ] Testar lote de Dependências.
+- [ ] Testar 1 REA com 1 disciplina.
+- [ ] Testar REA com várias disciplinas/professores.
+- [ ] Confirmar que Material/Entrega ficam agrupados por disciplina.
+- [ ] Confirmar seção `Aluno: xxx` renomeada.
+- [ ] Confirmar matrículas e papéis.
+- [ ] Confirmar que a navegação permanece responsiva e sem 504 durante criação.
+- [ ] Confirmar instalação independente e validar os históricos próprios.

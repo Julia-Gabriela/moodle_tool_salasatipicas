@@ -14,7 +14,7 @@ require_capability('tool/salasatipicas:manage', context_system::instance());
 require_sesskey();
 
 $historyid = required_param('historyid', PARAM_INT);
-$history = $DB->get_record('tool_atyp_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
+$history = $DB->get_record('tool_salasat_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
 if ((string)$history->status !== manager::STATUS_ERROR) {
     redirect(new moodle_url('/admin/tool/salasatipicas/dependency_history.php'),
         get_string('dep_retryonlyerrors', 'tool_salasatipicas'), null, \core\output\notification::NOTIFY_WARNING);

@@ -50,7 +50,7 @@ if ($data = $form->get_data()) {
 }
 
 echo $OUTPUT->header();
-echo html_writer::start_div('salasat-dep-toolbar');
+echo html_writer::start_div('salasdep-toolbar');
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/index.php'), '← ' . get_string('backtocentral', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/dependency.php'),
     '← ' . get_string('dep_backtomanage', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
@@ -69,12 +69,12 @@ if ($workerhealth['available']) {
         \core\output\notification::NOTIFY_ERROR);
 }
 
-echo html_writer::start_div('salasat-dep-card');
+echo html_writer::start_div('salasdep-card');
 $form->display();
 echo html_writer::end_div();
 
-echo html_writer::start_div('salasat-dep-card mt-4');
-echo html_writer::start_div('salasat-dep-toolbar');
+echo html_writer::start_div('salasdep-card mt-4');
+echo html_writer::start_div('salasdep-toolbar');
 echo html_writer::tag('h3', get_string('dep_configuredcategories', 'tool_salasatipicas'));
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/dependency_category.php'),
     get_string('dep_addcategoryconfig', 'tool_salasatipicas'), ['class' => 'btn btn-primary']);

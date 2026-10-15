@@ -78,8 +78,8 @@ if ($action === 'confirmmanual') {
         manager::launch_worker($historyid);
         redirect(new moodle_url('/admin/tool/salasatipicas/rea_history.php', ['queued' => $historyid]));
     } catch (Throwable $e) {
-        if ($historyid > 0 && $DB->record_exists('tool_atyp_rea_hist', ['id' => $historyid])) {
-            $DB->update_record('tool_atyp_rea_hist', (object)[
+        if ($historyid > 0 && $DB->record_exists('tool_salasat_rea_hist', ['id' => $historyid])) {
+            $DB->update_record('tool_salasat_rea_hist', (object)[
                 'id' => $historyid, 'status' => manager::STATUS_ERROR, 'message' => $e->getMessage(), 'timemodified' => time(),
             ]);
         }
@@ -139,7 +139,7 @@ if ($data = $form->get_data()) {
     }
     $SESSION->tool_salasatipicas_rea_manual[$previewtoken] = ['raw' => $raw, 'time' => time()];
     $reviewurl = new moodle_url('/admin/tool/salasatipicas/rea.php', ['previewtoken' => $previewtoken]);
-    $reviewurl->set_anchor('salasat-rea-confirmation');
+    $reviewurl->set_anchor('salasrea-confirmation');
     redirect($reviewurl);
 }
 
@@ -153,13 +153,13 @@ if (!empty($SESSION->tool_salasatipicas_rea_manual) && is_array($SESSION->tool_s
 
 echo $OUTPUT->header();
 
-echo html_writer::start_div('salasat-rea-toolbar');
+echo html_writer::start_div('salasrea-toolbar');
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/index.php'), '← ' . get_string('backtocentral', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/rea_configuration.php'), get_string('rea_settingsbutton', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/rea_history.php'), get_string('rea_history', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::end_div();
 
-echo html_writer::div(get_string('rea_intro', 'tool_salasatipicas'), 'salasat-rea-intro');
+echo html_writer::div(get_string('rea_intro', 'tool_salasatipicas'), 'salasrea-intro');
 
 if ($queueerror !== '') {
     echo $OUTPUT->notification(get_string('rea_creationerror', 'tool_salasatipicas', s($queueerror)), \core\output\notification::NOTIFY_ERROR);
@@ -177,16 +177,16 @@ if (!$categories) {
 }
 
 $currentpattern = manager::get_config_value('fullnamepattern', manager::DEFAULT_FULLNAME_PATTERN);
-echo html_writer::div(html_writer::tag('strong', get_string('rea_currentnamepattern', 'tool_salasatipicas')) . '<br>' . s($currentpattern), 'salasat-rea-pattern');
+echo html_writer::div(html_writer::tag('strong', get_string('rea_currentnamepattern', 'tool_salasatipicas')) . '<br>' . s($currentpattern), 'salasrea-pattern');
 
-echo html_writer::start_div('salasat-rea-card salasat-rea-maincard');
+echo html_writer::start_div('salasrea-card salasrea-maincard');
 $form->display();
 echo html_writer::end_div();
 
 if ($preview) {
-    echo html_writer::start_div('salasat-rea-preview mt-4', ['id' => 'salasat-rea-confirmation']);
+    echo html_writer::start_div('salasrea-preview mt-4', ['id' => 'salasrea-confirmation']);
     echo html_writer::tag('h3', get_string('rea_confirmmanualtitle', 'tool_salasatipicas'));
-    $category = $DB->get_record('tool_atyp_rea_cat', ['id' => $preview['categoryconfigid']]);
+    $category = $DB->get_record('tool_salasat_rea_cat', ['id' => $preview['categoryconfigid']]);
     $subjectlines = [];
     foreach ($preview['subjects'] as $subject) {
         $teachers = array_map(fn($t) => $t['fullname'] . ' (' . $t['username'] . ')', $subject['teachers']);
@@ -228,7 +228,7 @@ if ($preview) {
     echo html_writer::end_div();
 }
 
-$recent = $DB->get_records('tool_atyp_rea_hist', null, 'timecreated DESC', '*', 0, 8);
+$recent = $DB->get_records('tool_salasat_rea_hist', null, 'timecreated DESC', '*', 0, 8);
 if ($recent) {
     echo html_writer::tag('h3', get_string('rea_recentreas', 'tool_salasatipicas'), ['class' => 'mt-4']);
     $table = new html_table();

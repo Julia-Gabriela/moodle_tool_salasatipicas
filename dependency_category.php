@@ -21,7 +21,7 @@ $PAGE->requires->css(new moodle_url('/admin/tool/salasatipicas/styles.css'));
 
 $record = null;
 if ($id) {
-    $record = $DB->get_record('tool_atyp_dep_cat', ['id' => $id], '*', MUST_EXIST);
+    $record = $DB->get_record('tool_salasat_dep_cat', ['id' => $id], '*', MUST_EXIST);
 }
 $form = new category_form($PAGE->url);
 if ($record) {
@@ -43,17 +43,17 @@ if ($data = $form->get_data()) {
     ];
     if (!empty($data->id)) {
         $save->id = (int)$data->id;
-        $DB->update_record('tool_atyp_dep_cat', $save);
+        $DB->update_record('tool_salasat_dep_cat', $save);
     } else {
         $save->timecreated = $now;
-        $DB->insert_record('tool_atyp_dep_cat', $save);
+        $DB->insert_record('tool_salasat_dep_cat', $save);
     }
     redirect(new moodle_url('/admin/tool/salasatipicas/dependency_configuration.php'), get_string('changessaved'), null,
         \core\output\notification::NOTIFY_SUCCESS);
 }
 
 echo $OUTPUT->header();
-echo html_writer::start_div('salasat-dep-card');
+echo html_writer::start_div('salasdep-card');
 $form->display();
 echo html_writer::end_div();
 echo $OUTPUT->footer();

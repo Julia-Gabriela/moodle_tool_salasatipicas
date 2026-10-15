@@ -14,8 +14,8 @@ $PAGE->set_title(get_string('manage', 'tool_salasatipicas'));
 $PAGE->set_heading(get_string('manage', 'tool_salasatipicas'));
 $PAGE->requires->css(new moodle_url('/admin/tool/salasatipicas/styles.css'));
 
-$depcount = $DB->count_records('tool_atyp_dep_hist');
-$reacount = $DB->count_records('tool_atyp_rea_hist');
+$depcount = $DB->count_records('tool_salasat_dep_hist');
+$reacount = $DB->count_records('tool_salasat_rea_hist');
 
 echo $OUTPUT->header();
 echo html_writer::div(get_string('landingintro', 'tool_salasatipicas'), 'salasat-intro');

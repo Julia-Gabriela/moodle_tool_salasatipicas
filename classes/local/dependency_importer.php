@@ -38,22 +38,52 @@ class dependency_importer {
         }
 
         if ($extension === 'csv') {
-            $reader = new Csv();
-            $reader->setReadDataOnly(true);
-            $reader->setDelimiter(self::detect_delimiter($path));
-            $reader->setEnclosure('"');
-            $reader->setSheetIndex(0);
-            $spreadsheet = $reader->load($path);
+            // Excel may export ANSI/Windows-1252 instead of UTF-8. Decode before parsing.
+            $content = file_get_contents($path);
+            if ($content === false) {
+                throw new \moodle_exception('dep_importencodingerror', 'tool_salasatipicas');
+            }
+            $content = self::normalise_csv_encoding($content);
+            $csvpath = tempnam(make_request_directory(), 'salasdep_csv_');
+            if ($csvpath === false) {
+                throw new \moodle_exception('dep_importencodingerror', 'tool_salasatipicas');
+            }
+            try {
+                if (file_put_contents($csvpath, $content) !== strlen($content)) {
+                    throw new \moodle_exception('dep_importencodingerror', 'tool_salasatipicas');
+                }
+                $reader = new Csv();
+                $reader->setReadDataOnly(true);
+                $reader->setInputEncoding('UTF-8');
+                $reader->setDelimiter(self::detect_delimiter($csvpath));
+                $reader->setEnclosure('"');
+                $reader->setSheetIndex(0);
+                $spreadsheet = $reader->load($csvpath);
+            } finally {
+                unlink($csvpath);
+            }
         } else {
             $spreadsheet = IOFactory::load($path, 0, [IOFactory::READER_XLSX]);
         }
 
-        $rows = $spreadsheet->getActiveSheet()->toArray(null, false, true, false);
+        // The user may save the workbook while viewing the Professores reference sheet.
+        $sheet = $spreadsheet->getSheetByName('Dependencias') ?? $spreadsheet->getSheet(0);
+        $rows = $sheet->toArray(null, false, true, false);
         $spreadsheet->disconnectWorksheets();
         unset($spreadsheet);
 
         if (!$rows) {
             throw new \moodle_exception('dep_emptyimport', 'tool_salasatipicas');
+        }
+
+        // Do not create courses from text whose original characters have already been lost.
+        foreach ($rows as $offset => $row) {
+            foreach ($row as $value) {
+                if (is_string($value) && (preg_match('//u', $value) !== 1 ||
+                        strpos($value, "\xEF\xBF\xBD") !== false)) {
+                    throw new \moodle_exception('dep_importdamagedtext', 'tool_salasatipicas', '', $offset + 1);
+                }
+            }
         }
 
         $headers = array_map([self::class, 'normalise_header'], array_shift($rows));
@@ -277,6 +307,44 @@ class dependency_importer {
             }
         }
         return true;
+    }
+
+    /** Decode common Excel exports without stripping or guessing missing characters. */
+    private static function normalise_csv_encoding(string $content): string {
+        $encoding = 'UTF-8';
+        // Check UTF-32 first: its little-endian BOM starts with the UTF-16 BOM.
+        $boms = [
+            "\xFF\xFE\x00\x00" => 'UTF-32LE',
+            "\x00\x00\xFE\xFF" => 'UTF-32BE',
+            "\xFF\xFE" => 'UTF-16LE',
+            "\xFE\xFF" => 'UTF-16BE',
+            "\xEF\xBB\xBF" => 'UTF-8',
+        ];
+        $hasbom = false;
+        foreach ($boms as $bom => $candidate) {
+            if (strncmp($content, $bom, strlen($bom)) === 0) {
+                $encoding = $candidate;
+                $content = substr($content, strlen($bom));
+                $hasbom = true;
+                break;
+            }
+        }
+        if (!$hasbom && preg_match('//u', $content) !== 1) {
+            // Western Excel ANSI; also covers the Portuguese letters used in ISO-8859-1.
+            $encoding = 'Windows-1252';
+        }
+        if ($encoding !== 'UTF-8') {
+            $converted = \core_text::convert($content, $encoding, 'UTF-8');
+            // Refuse lossy conversions rather than silently dropping characters.
+            if (\core_text::convert($converted, 'UTF-8', $encoding) !== $content) {
+                throw new \moodle_exception('dep_importencodingerror', 'tool_salasatipicas');
+            }
+            $content = $converted;
+        }
+        if (preg_match('//u', $content) !== 1 || strpos($content, "\x00") !== false) {
+            throw new \moodle_exception('dep_importencodingerror', 'tool_salasatipicas');
+        }
+        return $content;
     }
 
     private static function detect_delimiter(string $path): string {

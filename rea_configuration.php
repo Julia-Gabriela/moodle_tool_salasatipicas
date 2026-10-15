@@ -42,16 +42,16 @@ if ($data = $form->get_data()) {
 }
 
 echo $OUTPUT->header();
-echo html_writer::start_div('salasat-rea-toolbar');
+echo html_writer::start_div('salasrea-toolbar');
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/index.php'), '← ' . get_string('backtocentral', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/rea.php'), '← ' . get_string('rea_backtomanage', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::end_div();
 $health = manager::get_worker_health();
 echo $OUTPUT->notification($health['available'] ? get_string('rea_workerhealthycli', 'tool_salasatipicas', (object)['php'=>$health['php'],'launcher'=>$health['launcher']]) : get_string('rea_workerunhealthybanner', 'tool_salasatipicas', $health['reason']), $health['available'] ? \core\output\notification::NOTIFY_SUCCESS : \core\output\notification::NOTIFY_ERROR);
-echo html_writer::start_div('salasat-rea-card'); $form->display(); echo html_writer::end_div();
+echo html_writer::start_div('salasrea-card'); $form->display(); echo html_writer::end_div();
 
-echo html_writer::start_div('salasat-rea-card mt-4');
-echo html_writer::start_div('salasat-rea-toolbar');
+echo html_writer::start_div('salasrea-card mt-4');
+echo html_writer::start_div('salasrea-toolbar');
 echo html_writer::tag('h3', get_string('rea_configuredcategories', 'tool_salasatipicas'));
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/rea_category.php'), get_string('rea_addcategoryconfig', 'tool_salasatipicas'), ['class' => 'btn btn-primary']);
 echo html_writer::end_div();

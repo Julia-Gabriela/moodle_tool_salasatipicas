@@ -1,6 +1,7 @@
+/.idea/
+/.vscode/
+/vendor/
+/node_modules/
 .DS_Store
 Thumbs.db
-.idea/
-.vscode/
 *.log
-*.tmp

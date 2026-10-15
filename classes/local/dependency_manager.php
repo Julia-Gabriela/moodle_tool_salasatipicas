@@ -31,7 +31,7 @@ class dependency_manager {
     public static function get_categories(bool $activeonly = true): array {
         global $DB;
         $conditions = $activeonly ? ['active' => 1] : [];
-        return $DB->get_records('tool_atyp_dep_cat', $conditions, 'sortorder ASC, name ASC');
+        return $DB->get_records('tool_salasat_dep_cat', $conditions, 'sortorder ASC, name ASC');
     }
 
     /**
@@ -185,7 +185,7 @@ class dependency_manager {
             return ['valid' => false, 'errors' => $errors, 'definition' => null];
         }
 
-        $category = $DB->get_record('tool_atyp_dep_cat', [
+        $category = $DB->get_record('tool_salasat_dep_cat', [
             'id' => (int)$data['categoryconfigid'],
             'active' => 1,
         ]);
@@ -324,7 +324,7 @@ class dependency_manager {
             $errors[] = get_string('dep_shortnametoolong', 'tool_salasatipicas', self::MAX_SHORTNAME_LENGTH);
         }
         if ($DB->record_exists('course', ['shortname' => $targetshortname]) ||
-                $DB->record_exists_select('tool_atyp_dep_hist', 'targetshortname = ? AND status <> ?', [$targetshortname, self::STATUS_ERROR])) {
+                $DB->record_exists_select('tool_salasat_dep_hist', 'targetshortname = ? AND status <> ?', [$targetshortname, self::STATUS_ERROR])) {
             $errors[] = get_string('dep_duplicatecourse', 'tool_salasatipicas', $targetshortname);
         }
 
@@ -543,7 +543,7 @@ class dependency_manager {
         try {
             // Recheck under a cross-request lock to close the race between preview and confirmation.
             if ($DB->record_exists('course', ['shortname' => (string)$definition['targetshortname']]) ||
-                    $DB->record_exists_select('tool_atyp_dep_hist', 'targetshortname = ? AND status <> ?',
+                    $DB->record_exists_select('tool_salasat_dep_hist', 'targetshortname = ? AND status <> ?',
                         [(string)$definition['targetshortname'], self::STATUS_ERROR])) {
                 throw new \moodle_exception('dep_duplicatecourse', 'tool_salasatipicas', '', $definition['targetshortname']);
             }
@@ -577,10 +577,10 @@ class dependency_manager {
             ];
 
             $transaction = $DB->start_delegated_transaction();
-            $historyid = (int)$DB->insert_record('tool_atyp_dep_hist', $history);
+            $historyid = (int)$DB->insert_record('tool_salasat_dep_hist', $history);
             $participants = $definition['participants'] ?? [];
             foreach ($participants as $participant) {
-                $DB->insert_record('tool_atyp_dep_part', (object)[
+                $DB->insert_record('tool_salasat_dep_part', (object)[
                     'historyid' => $historyid,
                     'userid' => (int)$participant['userid'],
                     'username' => (string)$participant['username'],
@@ -699,7 +699,7 @@ class dependency_manager {
             $message .= ' PID ' . $pid . '.';
         }
         $DB->execute(
-            'UPDATE {tool_atyp_dep_hist} SET message = ?, timemodified = ? WHERE id = ? AND status = ?',
+            'UPDATE {tool_salasat_dep_hist} SET message = ?, timemodified = ? WHERE id = ? AND status = ?',
             [$message, time(), $historyid, self::STATUS_QUEUED]
         );
 
@@ -737,6 +737,8 @@ class dependency_manager {
             return;
         }
         $globallock = null;
+        $legacydeplock = null;
+        $legacyrealock = null;
         $targetlock = null;
 
         $bc = null;
@@ -746,7 +748,7 @@ class dependency_manager {
         $targetcourseid = 0;
 
         try {
-            $history = $DB->get_record('tool_atyp_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
+            $history = $DB->get_record('tool_salasat_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
             if ($history->status === self::STATUS_READY || $history->status === self::STATUS_ERROR) {
                 return;
             }
@@ -756,6 +758,20 @@ class dependency_manager {
             self::update_history_message($historyid, get_string('dep_workerwaitingglobal', 'tool_salasatipicas'));
             $globallock = $factory->get_lock('global_creation_worker', HOURSECS);
             if (!$globallock) {
+                throw new \moodle_exception('dep_workerbusytimeout', 'tool_salasatipicas');
+            }
+
+            // During migration, also respect the global locks used by both legacy plugins.
+            // This prevents an old Dependências/REA worker and this central from running heavy
+            // backup/restore operations at the same time.
+            $legacydepfactory = \core\lock\lock_config::get_lock_factory('tool_salasdependencias');
+            $legacyreafactory = \core\lock\lock_config::get_lock_factory('tool_salasrea');
+            $legacydeplock = $legacydepfactory->get_lock('global_creation_worker', HOURSECS);
+            if (!$legacydeplock) {
+                throw new \moodle_exception('dep_workerbusytimeout', 'tool_salasatipicas');
+            }
+            $legacyrealock = $legacyreafactory->get_lock('global_creation_worker', HOURSECS);
+            if (!$legacyrealock) {
                 throw new \moodle_exception('dep_workerbusytimeout', 'tool_salasatipicas');
             }
 
@@ -792,7 +808,7 @@ class dependency_manager {
                 }
             }
 
-            $DB->update_record('tool_atyp_dep_hist', (object)[
+            $DB->update_record('tool_salasat_dep_hist', (object)[
                 'id' => $historyid,
                 'status' => self::STATUS_PROCESSING,
                 'message' => get_string('dep_workerprocessing', 'tool_salasatipicas'),
@@ -832,7 +848,7 @@ class dependency_manager {
             $usersetting->set_value('0');
 
             $backupid = $bc->get_backupid();
-            $DB->update_record('tool_atyp_dep_hist', (object)[
+            $DB->update_record('tool_salasat_dep_hist', (object)[
                 'id' => $historyid,
                 'backupid' => $backupid,
                 'timemodified' => time(),
@@ -869,7 +885,7 @@ class dependency_manager {
                 $placeholdershortname,
                 (int)$history->coursecategoryid
             );
-            $DB->update_record('tool_atyp_dep_hist', (object)[
+            $DB->update_record('tool_salasat_dep_hist', (object)[
                 'id' => $historyid,
                 'targetcourseid' => $targetcourseid,
                 'timemodified' => time(),
@@ -892,7 +908,7 @@ class dependency_manager {
             $rc->prepare_copy();
 
             $restoreid = $rc->get_restoreid();
-            $DB->update_record('tool_atyp_dep_hist', (object)[
+            $DB->update_record('tool_salasat_dep_hist', (object)[
                 'id' => $historyid,
                 'restoreid' => $restoreid,
                 'timemodified' => time(),
@@ -935,7 +951,7 @@ class dependency_manager {
             rebuild_course_cache($targetcourseid, true);
             \cache_helper::purge_by_event('changesincourse');
 
-            $DB->update_record('tool_atyp_dep_hist', (object)[
+            $DB->update_record('tool_salasat_dep_hist', (object)[
                 'id' => $historyid,
                 'status' => self::STATUS_READY,
                 'message' => get_string('dep_dependencyready', 'tool_salasatipicas'),
@@ -960,7 +976,7 @@ class dependency_manager {
                     $cleanuperror = ' | Cleanup: ' . $cleanup->getMessage();
                 }
             }
-            $DB->update_record('tool_atyp_dep_hist', (object)[
+            $DB->update_record('tool_salasat_dep_hist', (object)[
                 'id' => $historyid,
                 'targetcourseid' => $targetcourseid,
                 'status' => self::STATUS_ERROR,
@@ -1005,6 +1021,12 @@ class dependency_manager {
             if ($targetlock) {
                 $targetlock->release();
             }
+            if ($legacyrealock) {
+                $legacyrealock->release();
+            }
+            if ($legacydeplock) {
+                $legacydeplock->release();
+            }
             if ($globallock) {
                 $globallock->release();
             }
@@ -1020,7 +1042,7 @@ class dependency_manager {
      */
     private static function update_history_message(int $historyid, string $message): void {
         global $DB;
-        $DB->update_record('tool_atyp_dep_hist', (object)[
+        $DB->update_record('tool_salasat_dep_hist', (object)[
             'id' => $historyid,
             'message' => $message,
             'timemodified' => time(),
@@ -1053,7 +1075,7 @@ class dependency_manager {
     public static function finalise_history(int $historyid): bool {
         global $DB;
 
-        $history = $DB->get_record('tool_atyp_dep_hist', ['id' => $historyid]);
+        $history = $DB->get_record('tool_salasat_dep_hist', ['id' => $historyid]);
         if (!$history) {
             return false;
         }
@@ -1078,7 +1100,7 @@ class dependency_manager {
                 self::manual_enrol((int)$course->id, (int)$participant->userid, (int)$participant->roleid);
             }
 
-            $DB->update_record('tool_atyp_dep_hist', (object)[
+            $DB->update_record('tool_salasat_dep_hist', (object)[
                 'id' => $historyid,
                 'status' => self::STATUS_READY,
                 'message' => get_string('dep_dependencyready', 'tool_salasatipicas'),
@@ -1104,7 +1126,7 @@ class dependency_manager {
 
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
-        $legacy = $DB->get_records('tool_atyp_dep_hist', ['status' => self::STATUS_COPYING], 'timecreated ASC');
+        $legacy = $DB->get_records('tool_salasat_dep_hist', ['status' => self::STATUS_COPYING], 'timecreated ASC');
         foreach ($legacy as $history) {
             if ((int)$history->targetcourseid > 0) {
                 $course = $DB->get_record('course', ['id' => (int)$history->targetcourseid], 'id,shortname');
@@ -1140,12 +1162,12 @@ class dependency_manager {
     public static function get_history_participants(int $historyid, bool $legacyfallback = true): array {
         global $DB;
 
-        $records = $DB->get_records('tool_atyp_dep_part', ['historyid' => $historyid], 'sortorder ASC, id ASC');
+        $records = $DB->get_records('tool_salasat_dep_part', ['historyid' => $historyid], 'sortorder ASC, id ASC');
         if ($records || !$legacyfallback) {
             return array_values($records);
         }
 
-        $history = $DB->get_record('tool_atyp_dep_hist', ['id' => $historyid]);
+        $history = $DB->get_record('tool_salasat_dep_hist', ['id' => $historyid]);
         if (!$history) {
             return [];
         }
@@ -1178,7 +1200,7 @@ class dependency_manager {
             return [];
         }
         [$insql, $params] = $DB->get_in_or_equal($historyids, SQL_PARAMS_NAMED, 'hid');
-        $records = $DB->get_records_select('tool_atyp_dep_part', "historyid {$insql}", $params, 'historyid ASC, sortorder ASC, id ASC');
+        $records = $DB->get_records_select('tool_salasat_dep_part', "historyid {$insql}", $params, 'historyid ASC, sortorder ASC, id ASC');
         $grouped = [];
         foreach ($records as $record) {
             $grouped[(int)$record->historyid][] = $record;
@@ -1256,7 +1278,7 @@ class dependency_manager {
      */
     public static function mark_error(int $historyid, string $message): void {
         global $DB;
-        $DB->update_record('tool_atyp_dep_hist', (object)[
+        $DB->update_record('tool_salasat_dep_hist', (object)[
             'id' => $historyid,
             'status' => self::STATUS_ERROR,
             'message' => $message,

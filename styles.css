@@ -1,4 +1,4 @@
-.salasat-dep-toolbar {
+.salasdep-toolbar {
     display: flex;
     gap: .75rem;
     align-items: center;
@@ -7,17 +7,17 @@
     margin-bottom: 1rem;
 }
 
-.salasat-dep-toolbar h3 {
+.salasdep-toolbar h3 {
     margin: 0 auto 0 0;
 }
 
-.salasat-dep-intro {
+.salasdep-intro {
     font-size: 1rem;
     margin-bottom: 1rem;
     max-width: 980px;
 }
 
-.salasat-dep-pattern {
+.salasdep-pattern {
     padding: 1rem;
     margin-bottom: 1.25rem;
     background: #f7f7f7;
@@ -26,15 +26,15 @@
     border-radius: 4px;
 }
 
-.salasat-dep-grid {
+.salasdep-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 1.25rem;
     align-items: stretch;
 }
 
-.salasat-dep-card,
-.salasat-dep-preview {
+.salasdep-card,
+.salasdep-preview {
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -42,40 +42,40 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
 }
 
-.salasat-dep-card .collapsible-actions,
-.salasat-dep-card legend a.fheader {
+.salasdep-card .collapsible-actions,
+.salasdep-card legend a.fheader {
     font-weight: 600;
 }
 
-.salasat-dep-preview .generaltable,
-.salasat-dep-card .generaltable {
+.salasdep-preview .generaltable,
+.salasdep-card .generaltable {
     width: 100%;
 }
 
 @media (max-width: 980px) {
-    .salasat-dep-grid {
+    .salasdep-grid {
         grid-template-columns: 1fr;
     }
 }
 
 /* Keep final actions visually distinct. */
-.salasat-dep-preview .btn-danger {
+.salasdep-preview .btn-danger {
     font-weight: 600;
 }
 
 /* v0.1.3: keep manual fields visually aligned, including Moodle autocomplete. */
-.salasat-dep-card .form-control,
-.salasat-dep-card .custom-select,
-.salasat-dep-card select,
-.salasat-dep-card .form-autocomplete-input {
+.salasdep-card .form-control,
+.salasdep-card .custom-select,
+.salasdep-card select,
+.salasdep-card .form-autocomplete-input {
     min-height: 40px;
 }
 
-.salasat-dep-card .form-autocomplete-input {
+.salasdep-card .form-autocomplete-input {
     line-height: 1.5;
 }
 
-.salasat-dep-card .form-autocomplete-selection {
+.salasdep-card .form-autocomplete-selection {
     min-height: 40px;
     display: flex;
     align-items: center;
@@ -83,38 +83,38 @@
 }
 
 /* Avoid a tiny select arrow control on themes which style plain selects differently. */
-.salasat-dep-card select.form-control,
-.salasat-dep-card select.custom-select {
+.salasdep-card select.form-control,
+.salasdep-card select.custom-select {
     height: 40px;
 }
 
 
 /* v0.1.4: equal-height creation cards and production confirmation styling. */
-.salasat-dep-grid > .salasat-dep-card {
+.salasdep-grid > .salasdep-card {
     height: 100%;
 }
 
-.salasat-dep-confirm-create.btn-success {
+.salasdep-confirm-create.btn-success {
     background-color: #198754;
     border-color: #198754;
     color: #fff;
     font-weight: 600;
 }
 
-.salasat-dep-confirm-create.btn-success:hover,
-.salasat-dep-confirm-create.btn-success:focus {
+.salasdep-confirm-create.btn-success:hover,
+.salasdep-confirm-create.btn-success:focus {
     background-color: #157347;
     border-color: #146c43;
     color: #fff;
 }
 
 /* v0.2.0: synchronous batch progress. */
-.salasat-dep-progress-wrap {
+.salasdep-progress-wrap {
     height: 1.25rem;
     overflow: hidden;
 }
 
-.salasat-dep-import-result {
+.salasdep-import-result {
     border: 1px solid #ddd;
     border-left-width: 4px;
     border-radius: 4px;
@@ -123,63 +123,120 @@
     background: #fff;
 }
 
-.salasat-dep-import-ok {
+.salasdep-import-ok {
     border-left-color: #198754;
 }
 
-.salasat-dep-import-error {
+.salasdep-import-error {
     border-left-color: #dc3545;
 }
 
-.salasat-dep-import-runner .progress-bar {
+.salasdep-import-runner .progress-bar {
     transition: width .25s ease;
 }
 
 
 /* Production status badges. */
-.salasat-dep-status {
+/* Keep all nine history columns inside the content area; scroll only on narrow screens. */
+.salasdep-history-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+.salasdep-history-wrap .salasdep-history-table {
+    width: 100%;
+    table-layout: fixed;
+    font-size: .8125rem;
+}
+.salasdep-history-table th,
+.salasdep-history-table td {
+    padding: .55rem .4rem;
+    vertical-align: middle;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.salasdep-history-table th:nth-child(1) { width: 9%; }
+.salasdep-history-table th:nth-child(2) { width: 8%; }
+.salasdep-history-table th:nth-child(3) { width: 14%; }
+.salasdep-history-table th:nth-child(4) { width: 18%; }
+.salasdep-history-table th:nth-child(5) { width: 19%; }
+.salasdep-history-table th:nth-child(6) { width: 5%; }
+.salasdep-history-table th:nth-child(7) { width: 7%; }
+.salasdep-history-table th:nth-child(8) { width: 10%; }
+.salasdep-history-table th:nth-child(9) { width: 10%; }
+.salasdep-history-table th:nth-child(9),
+.salasdep-history-table td:nth-child(9) { text-align: center; }
+.salasdep-history-table .salasdep-course-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: .35rem;
+}
+.salasdep-history-table .salasdep-copy-feedback {
+    font-size: .75rem;
+    line-height: 1.3;
+}
+.salasdep-history-table .salasdep-copy-feedback:empty { display: none; }
+.salasdep-history-table .salasdep-open-course,
+.salasdep-history-table .salasdep-copy-link {
+    max-width: 100%;
+    padding: .35rem .45rem;
+    font-size: .75rem;
+    line-height: 1.3;
+    white-space: normal;
+}
+.salasdep-history-table .salasdep-status {
+    max-width: 100%;
+    padding: .2rem .3rem;
+    white-space: normal;
+}
+@media (max-width: 767px) {
+    .salasdep-history-wrap .salasdep-history-table { min-width: 900px; }
+}
+
+.salasdep-status {
     display: inline-block;
     padding: .2rem .55rem;
     border-radius: 999px;
     font-weight: 600;
     white-space: nowrap;
 }
-.salasat-dep-status-ready { background: #d9ead3; color: #1b5e20; }
-.salasat-dep-status-error { background: #f8d7da; color: #842029; }
-.salasat-dep-status-processing, .salasat-dep-status-queued, .salasat-dep-status-copying { background: #fff3cd; color: #664d03; }
+.salasdep-status-ready { background: #d9ead3; color: #1b5e20; }
+.salasdep-status-error { background: #f8d7da; color: #842029; }
+.salasdep-status-processing, .salasdep-status-queued, .salasdep-status-copying { background: #fff3cd; color: #664d03; }
 
 
 /* RC2.2 - cleaner participant layout for production. */
-.salasat-dep-card .mform fieldset {
+.salasdep-card .mform fieldset {
     border: 0;
 }
 
-.salasat-dep-card .mform .fcontainer .fitem,
-.salasat-dep-card .mform .fcontainer .form-group {
+.salasdep-card .mform .fcontainer .fitem,
+.salasdep-card .mform .fcontainer .form-group {
     margin-bottom: .9rem;
 }
 
-.salasat-dep-card .mform .form-control,
-.salasat-dep-card .mform .custom-select,
-.salasat-dep-card .mform select,
-.salasat-dep-card .mform textarea,
-.salasat-dep-card .mform .form-autocomplete-selection {
+.salasdep-card .mform .form-control,
+.salasdep-card .mform .custom-select,
+.salasdep-card .mform select,
+.salasdep-card .mform textarea,
+.salasdep-card .mform .form-autocomplete-selection {
     width: 100%;
     max-width: 100%;
 }
 
-.salasat-dep-card .mform .form-autocomplete-selection {
+.salasdep-card .mform .form-autocomplete-selection {
     min-height: 44px;
     padding-top: .35rem;
     padding-bottom: .35rem;
 }
 
-.salasat-dep-card .mform .form-autocomplete-downarrow {
+.salasdep-card .mform .form-autocomplete-downarrow {
     min-height: 44px;
 }
 
-.salasat-dep-card .mform .felement.static .form-control-static,
-.salasat-dep-card .mform .felement .form-static {
+.salasdep-card .mform .felement.static .form-control-static,
+.salasdep-card .mform .felement .form-static {
     background: #f8f9fa;
     border: 1px solid #e2e8f0;
     border-left: 4px solid #f28c00;
@@ -189,8 +246,8 @@
 }
 
 /* RC2.3 - participant/manual form alignment in the two-column admin layout. */
-.salasat-dep-card .mform .fitem.row,
-.salasat-dep-card .mform .form-group.row {
+.salasdep-card .mform .fitem.row,
+.salasdep-card .mform .form-group.row {
     display: flex;
     flex-wrap: nowrap;
     align-items: flex-start;
@@ -199,8 +256,8 @@
 }
 
 /* Keep labels readable (e.g. "Professor(es)") instead of squeezing them into a tiny column. */
-.salasat-dep-card .mform .fitem .col-form-label,
-.salasat-dep-card .mform .form-group .col-form-label {
+.salasdep-card .mform .fitem .col-form-label,
+.salasdep-card .mform .form-group .col-form-label {
     flex: 0 0 150px;
     width: 150px;
     max-width: 150px;
@@ -213,8 +270,8 @@
 }
 
 /* The field column uses only the remaining card width and is allowed to shrink safely. */
-.salasat-dep-card .mform .fitem .felement,
-.salasat-dep-card .mform .form-group .felement {
+.salasdep-card .mform .fitem .felement,
+.salasdep-card .mform .form-group .felement {
     flex: 1 1 0;
     width: auto;
     max-width: none;
@@ -224,33 +281,33 @@
 }
 
 /* Moodle autocomplete has nested wrappers that can otherwise exceed the available column. */
-.salasat-dep-card .mform .felement > div,
-.salasat-dep-card .mform .form-autocomplete-selection,
-.salasat-dep-card .mform .form-autocomplete-input,
-.salasat-dep-card .mform .form-autocomplete-downarrow,
-.salasat-dep-card .mform .form-control,
-.salasat-dep-card .mform .custom-select,
-.salasat-dep-card .mform select {
+.salasdep-card .mform .felement > div,
+.salasdep-card .mform .form-autocomplete-selection,
+.salasdep-card .mform .form-autocomplete-input,
+.salasdep-card .mform .form-autocomplete-downarrow,
+.salasdep-card .mform .form-control,
+.salasdep-card .mform .custom-select,
+.salasdep-card .mform select {
     box-sizing: border-box;
 }
 
-.salasat-dep-card .mform .form-autocomplete-selection,
-.salasat-dep-card .mform .form-autocomplete-input,
-.salasat-dep-card .mform .form-control,
-.salasat-dep-card .mform .custom-select,
-.salasat-dep-card .mform select {
+.salasdep-card .mform .form-autocomplete-selection,
+.salasdep-card .mform .form-autocomplete-input,
+.salasdep-card .mform .form-control,
+.salasdep-card .mform .custom-select,
+.salasdep-card .mform select {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
 }
 
 /* Keep the autocomplete arrow inside the field instead of adding width to the row. */
-.salasat-dep-card .mform .form-autocomplete-selection {
+.salasdep-card .mform .form-autocomplete-selection {
     position: relative;
     padding-right: 2.5rem;
 }
 
-.salasat-dep-card .mform .form-autocomplete-downarrow {
+.salasdep-card .mform .form-autocomplete-downarrow {
     position: absolute;
     right: .75rem;
     top: 50%;
@@ -263,19 +320,19 @@
 }
 
 /* Static explanatory rows should align with the same field column. */
-.salasat-dep-card .mform .fitem .felement.static,
-.salasat-dep-card .mform .fitem .felement.fstatic {
+.salasdep-card .mform .fitem .felement.static,
+.salasdep-card .mform .fitem .felement.fstatic {
     min-width: 0;
 }
 
 @media (max-width: 760px) {
-    .salasat-dep-card .mform .fitem.row,
-    .salasat-dep-card .mform .form-group.row {
+    .salasdep-card .mform .fitem.row,
+    .salasdep-card .mform .form-group.row {
         flex-wrap: wrap;
     }
 
-    .salasat-dep-card .mform .fitem .col-form-label,
-    .salasat-dep-card .mform .form-group .col-form-label {
+    .salasdep-card .mform .fitem .col-form-label,
+    .salasdep-card .mform .form-group .col-form-label {
         flex: 0 0 100%;
         width: 100%;
         max-width: 100%;
@@ -283,8 +340,8 @@
         margin-bottom: .35rem;
     }
 
-    .salasat-dep-card .mform .fitem .felement,
-    .salasat-dep-card .mform .form-group .felement {
+    .salasdep-card .mform .fitem .felement,
+    .salasdep-card .mform .form-group .felement {
         flex: 0 0 100%;
         width: 100%;
         max-width: 100%;
@@ -296,16 +353,16 @@
    Keep Moodle's help icons beside the label without breaking Professor(es), and
    constrain all controls to the card width. */
 @media (min-width: 761px) {
-    .salasat-dep-card .mform .fitem.row > .col-form-label,
-    .salasat-dep-card .mform .form-group.row > .col-form-label {
+    .salasdep-card .mform .fitem.row > .col-form-label,
+    .salasdep-card .mform .form-group.row > .col-form-label {
         flex: 0 0 175px !important;
         width: 175px !important;
         max-width: 175px !important;
         min-width: 175px !important;
     }
 
-    .salasat-dep-card .mform .fitem.row > .felement,
-    .salasat-dep-card .mform .form-group.row > .felement {
+    .salasdep-card .mform .fitem.row > .felement,
+    .salasdep-card .mform .form-group.row > .felement {
         flex: 1 1 calc(100% - 175px) !important;
         width: calc(100% - 175px) !important;
         max-width: calc(100% - 175px) !important;
@@ -325,17 +382,17 @@
 }
 
 /* Autocomplete wrappers must never grow beyond the form column. */
-.salasat-dep-card .mform .form-autocomplete-selection,
-.salasat-dep-card .mform .form-autocomplete-input,
-.salasat-dep-card .mform [data-fieldtype="autocomplete"],
-.salasat-dep-card .mform [data-fieldtype="autocomplete"] > div {
+.salasdep-card .mform .form-autocomplete-selection,
+.salasdep-card .mform .form-autocomplete-input,
+.salasdep-card .mform [data-fieldtype="autocomplete"],
+.salasdep-card .mform [data-fieldtype="autocomplete"] > div {
     max-width: 100% !important;
     min-width: 0 !important;
     box-sizing: border-box !important;
 }
 
 
-.salasat-rea-toolbar {
+.salasrea-toolbar {
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -343,53 +400,53 @@
     margin-bottom: 18px;
     flex-wrap: wrap;
 }
-.salasat-rea-intro { margin: 10px 0 18px; line-height: 1.55; }
-.salasat-rea-card,
-.salasat-rea-preview {
+.salasrea-intro { margin: 10px 0 18px; line-height: 1.55; }
+.salasrea-card,
+.salasrea-preview {
     border: 1px solid #d9dee3;
     border-radius: 7px;
     background: #fff;
     padding: 18px;
     overflow: hidden;
 }
-.salasat-rea-maincard { max-width: 1180px; }
-.salasat-rea-pattern {
+.salasrea-maincard { max-width: 1180px; }
+.salasrea-pattern {
     border-left: 4px solid #f7941d;
     background: #f8f9fa;
     padding: 14px 16px;
     margin-bottom: 18px;
 }
-.salasat-rea-card .fitem { align-items: flex-start; }
-.salasat-rea-card .fitem .col-form-label {
+.salasrea-card .fitem { align-items: flex-start; }
+.salasrea-card .fitem .col-form-label {
     flex: 0 0 190px;
     max-width: 190px;
     white-space: normal;
     word-break: normal;
     overflow-wrap: normal;
 }
-.salasat-rea-card .fitem .felement {
+.salasrea-card .fitem .felement {
     min-width: 0;
     max-width: calc(100% - 190px);
     flex: 1 1 auto;
 }
-.salasat-rea-card .form-autocomplete-selection,
-.salasat-rea-card .form-autocomplete-input,
-.salasat-rea-card .form-control,
-.salasat-rea-card select {
+.salasrea-card .form-autocomplete-selection,
+.salasrea-card .form-autocomplete-input,
+.salasrea-card .form-control,
+.salasrea-card select {
     max-width: 100%;
 }
-.salasat-rea-card .form-autocomplete-selection { width: 100%; }
-.salasat-rea-status { font-weight: 600; }
-.salasat-rea-status-ready { color: #198754; }
-.salasat-rea-status-error { color: #dc3545; }
-.salasat-rea-status-processing, .salasat-rea-status-queued { color: #b36b00; }
+.salasrea-card .form-autocomplete-selection { width: 100%; }
+.salasrea-status { font-weight: 600; }
+.salasrea-status-ready { color: #198754; }
+.salasrea-status-error { color: #dc3545; }
+.salasrea-status-processing, .salasrea-status-queued { color: #b36b00; }
 @media (max-width: 767.98px) {
-    .salasat-rea-card .fitem .col-form-label,
-    .salasat-rea-card .fitem .felement {
+    .salasrea-card .fitem .col-form-label,
+    .salasrea-card .fitem .felement {
         flex: 0 0 100%;
         max-width: 100%;
     }
-    .salasat-rea-toolbar { justify-content: flex-start; }
+    .salasrea-toolbar { justify-content: flex-start; }
 }
 
 
@@ -447,8 +504,8 @@
 
 
 /* 1.0.0 production - review anchors and final central alignment. */
-#salasat-dep-confirmation,
-#salasat-rea-confirmation {
+#salasdep-confirmation,
+#salasrea-confirmation {
     scroll-margin-top: 1.25rem;
 }
 
@@ -462,16 +519,16 @@
 }
 
 /* 1.0.1 production hotfix - REA form uses the same full content width as the recent REAs table. */
-.salasat-rea-maincard {
+.salasrea-maincard {
     width: 100%;
     max-width: none;
     box-sizing: border-box;
 }
 
-.salasat-rea-maincard .mform,
-.salasat-rea-maincard .mform > div,
-.salasat-rea-maincard fieldset,
-.salasat-rea-maincard .fcontainer {
+.salasrea-maincard .mform,
+.salasrea-maincard .mform > div,
+.salasrea-maincard fieldset,
+.salasrea-maincard .fcontainer {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;

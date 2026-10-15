@@ -1,174 +1,68 @@
-# Salas Atípicas para Moodle
+# Salas Atípicas
 
-Plugin administrativo (`tool_salasatipicas`) para **Moodle 5.0+** que centraliza a criação automatizada de dois tipos de salas acadêmicas que normalmente exigem muitas etapas manuais:
+Admin tool para Moodle 5.0 que reúne, em uma única central, os fluxos de **Dependências** e **REA**.
 
-- **Dependências** — criação manual ou em lote, baseada em templates, categorias e participantes configuráveis.
-- **REA** — criação de salas com dados do aluno/processo, disciplinas dinâmicas, professores, personalização do template e matrículas automáticas.
+## Objetivo
 
-O objetivo é reduzir trabalho repetitivo sem alterar o core do Moodle e sem executar backup/restore dentro da requisição HTTP do administrador.
-
-## Principais recursos
+O plugin mantém as duas automações independentes internamente, mas oferece um único acesso em **Administração do site → Cursos → Gerenciar salas atípicas**.
 
 ### Dependências
+Na versão 1.0.5, a coluna **Sala** reúne **Abrir sala** e **Copiar link**. O segundo botão copia o endereço completo do curso pronto para a área de transferência, sem abrir outra página, e confirma com “Link copiado!”. Se o navegador negar a cópia, uma mensagem orienta a alternativa manual. Valide ambos os botões no navegador do ambiente de teste antes de atualizar produção.
+
+Na versão 1.0.4, CSVs do Excel em UTF-8 ou ANSI/Windows-1252 são normalizados antes da importação. Unicode UTF-16/32 com BOM também é aceito. Se a planilha já contém `�`, corrija a fonte original; o importador impede novas criações a partir desse texto. Nomes já gravados no Moodle não são alterados automaticamente.
+
+O histórico possui uma coluna **Sala** com o botão **Abrir sala** para registros prontos com ID de curso. O endereço usa o domínio configurado no Moodle e `/course/view.php?id=ID_REAL`.
 
 - criação manual;
-- importação em lote por CSV e XLSX;
-- validação antes da criação;
+- importação em lote CSV/XLSX;
+- modelo XLSX com aba auxiliar de professores ativos (nome completo e username);
 - múltiplos professores, coordenação e alunos;
-- papéis definidos nas configurações;
-- template global ou template específico por categoria;
-- nome completo e nome breve configuráveis;
-- proteção contra duplicidade;
+- templates e categorias configuráveis;
 - histórico e reprocessamento;
-- processamento sequencial do lote.
+- nome completo e nome breve sem encurtamento automático.
 
 ### REA
-
-- formulário administrativo para os dados exibidos na sala;
-- seleção separada do usuário Moodle que será matriculado;
-- disciplinas dinâmicas com um ou mais professores;
-- coordenação opcional;
-- template e categoria configuráveis;
-- preenchimento automático da área de informações do template;
-- renomeação da seção do aluno;
-- organização dos pares **Material da Disciplina / Entrega da Atividade REA** por disciplina;
+- criação manual;
+- dados do processo/aluno preenchidos pelo formulário;
+- disciplinas dinâmicas com professores;
+- personalização da Área de texto e mídia do template;
+- renomeação da seção `Aluno: xxx`;
+- organização dos pares `Material da Disciplina` + `Entrega da Atividade REA`;
 - matrícula automática de aluno, professores e coordenação;
-- histórico próprio de processamento;
-- o plugin **não envia nem substitui materiais didáticos**.
-
-## Arquitetura
-
-O processamento pesado é isolado da requisição web:
-
-```text
-Administrador
-    │
-    ▼
-Formulário / validação / revisão
-    │
-    ▼
-Registro no histórico
-    │
-    ▼
-Worker PHP CLI independente
-    │
-    ├── backup do template
-    ├── restore do curso
-    ├── personalização
-    └── matrículas
-    │
-    ▼
-Sala pronta + histórico atualizado
-```
-
-A arquitetura foi desenhada para evitar timeouts de gateway durante backup/restore.
-
-- não depende do cron para concluir novas criações;
-- não usa tarefas ad hoc para o fluxo de criação;
-- backup/restore não roda na requisição do navegador;
-- rejeita PHP-FPM/CGI como worker;
-- usa lock global para evitar múltiplos backup/restores pesados simultâneos.
-
-## Requisitos
-
-- Moodle 5.0 ou superior;
-- PHP CLI disponível no servidor;
-- permissão do processo web para iniciar o worker PHP em segundo plano;
-- método de inscrição manual habilitado;
-- template(s) de curso previamente configurado(s);
-- papéis Moodle válidos no contexto de curso.
-
-## Instalação
-
-Copie a pasta `salasatipicas` para:
-
-```text
-/admin/tool/salasatipicas/
-```
-
-Depois acesse a administração do Moodle e conclua a atualização dos plugins.
-
-O acesso principal fica em:
-
-```text
-Administração do site → Cursos → Gerenciar salas atípicas
-```
-
-Após instalar:
-
-1. limpe os caches do Moodle;
-2. configure os papéis de aluno, professor e coordenação;
-3. cadastre as categorias de destino;
-4. informe os IDs dos templates;
-5. faça uma criação controlada antes de usar em escala.
-
-> Esta distribuição é independente e não migra automaticamente configurações ou históricos de outros plugins.
-
-## Importação de Dependências
-
-O módulo aceita CSV/XLSX com as colunas:
-
-```text
-processo | disciplina | professor | coordenacao | aluno | periodo | categoria
-```
-
-Para informar mais de um usuário na mesma célula, use `|`:
-
-```text
-professor.um|professor.dois
-```
-
-Recomenda-se usar o modelo XLSX gerado pelo próprio plugin para preservar zeros à esquerda e evitar conversões automáticas de datas/períodos pelo Excel.
-
-## Configuração de REA
-
-O template REA deve conter os marcadores configurados na administração, por padrão:
-
-```text
-Aluno (a):
-Aluno: xxx
-Material da Disciplina
-Entrega da Atividade REA - Disciplina
-```
-
-O plugin localiza essas estruturas após o restore e adapta a sala conforme os dados informados no formulário.
+- não envia nem substitui materiais didáticos.
 
 ## Segurança operacional
 
-- acesso restrito por capability de sistema;
-- validação de template, categoria, usuários e papéis;
-- confirmação antes da criação;
-- lock de processamento pesado;
-- tentativa de limpeza de curso incompleto em falhas críticas;
-- histórico operacional para diagnóstico;
-- processamento pesado exclusivo do worker CLI.
+### Validação da versão 1.0.4
 
-## Estrutura do projeto
+Antes de atualizar produção, valide no Moodle de teste: envie arquivos CSV UTF-8 e ANSI com `Ética`, `Programação`, `AÇÃO` e `Extensão 3ª`; confira a prévia e o nome de uma sala de teste criada. Salve também um XLSX com a aba Professores aberta e confirme que os dados são lidos de Dependencias. No histórico, o botão deve abrir o ID da sala pronta; linhas pendentes ou com erro não devem exibir esse botão. Confira o layout no tema instalado e em tela estreita. Não reimporte salas de produção apenas para corrigir os nomes existentes.
 
-```text
-salasatipicas/
-├── amd/                    # JavaScript/AMD do lote
-├── classes/
-│   ├── event/              # Eventos de auditoria
-│   ├── form/               # Formulários Moodle
-│   ├── local/              # Regras de negócio
-│   └── privacy/            # Privacy API
-├── cli/                    # Workers CLI
-├── db/                     # XMLDB, capabilities e upgrades
-├── lang/                   # pt-BR e inglês
-├── dependency.php          # Gerenciamento de Dependências
-├── rea.php                 # Gerenciamento de REA
-├── history.php             # Histórico geral
-├── index.php               # Central do plugin
-└── styles.css              # Interface administrativa
-```
+Os testes automatizados estão em `tests/dependency_importer_test.php`. Em uma instalação de desenvolvimento do Moodle com PHPUnit inicializado, execute `vendor/bin/phpunit admin/tool/salasatipicas/tests/dependency_importer_test.php`. Esta entrega não foi executada em um servidor Moodle; a validação em ambiente de teste continua necessária.
 
-## Status
+As duas automações utilizam **PHP CLI destacado** para backup/restore. O navegador valida, registra a solicitação e dispara o worker; ele nunca executa o processo pesado na requisição HTTP.
 
-Versão pública inicial: **1.0.0**.
+- sem cron;
+- sem tarefas ad hoc;
+- sem backup/restore no navegador;
+- rejeita PHP-FPM/CGI como worker;
+- lock global compartilhado entre Dependência e REA: somente uma criação pesada desta central é processada por vez.
 
-Antes de usar em produção, valide o plugin no seu próprio ambiente de homologação, principalmente templates, categorias, papéis, permissões do PHP CLI e comportamento do proxy/webserver.
+## Autoria e distribuição
 
-## Licença
+Desenvolvido por **Júlia Gabriela Gomes da Silva**. Licença GNU GPL v3 ou posterior; consulte `LICENSE`.
 
-GPL-3.0-or-later, seguindo a licença do Moodle.
+## Edição pessoal 1.0.6
+
+Componente: `tool_salasatipicas`. Pasta: `admin/tool/salasatipicas`.
+
+Esta edição tem identidade, tabelas, permissões e configurações próprias. Instale como um novo plugin; ela não atualiza nem migra dados de componentes com outros nomes. Configure categorias, templates e papéis antes do uso. Nenhum dado de configuração ou histórico é importado automaticamente.
+
+1. Copie a pasta `salasatipicas` para `admin/tool`.
+2. Acesse Administração do site → Notificações.
+3. Configure Dependências e REA e valide os fluxos em teste.
+
+Para Git, coloque o conteúdo desta pasta na raiz do repositório e versione também `amd/build`.
+
+## Verificação desta entrega
+
+Conferidos nomes técnicos, referências de tabelas, XML de instalação, módulos JavaScript e integridade do ZIP. Não foi possível executar PHP, PHPUnit ou testar backup/restore em Moodle neste ambiente. O checklist é um roteiro de validação, não um registro de testes aprovados. A edição permanece marcada como beta até validação funcional.

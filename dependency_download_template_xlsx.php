@@ -28,6 +28,23 @@ $teacherrole = isset($rolelookup[$teacherroleid]) ? $rolelookup[$teacherroleid]-
 $studentrole = isset($rolelookup[$studentroleid]) ? $rolelookup[$studentroleid]->shortname : '';
 $coordrole = isset($rolelookup[$coordroleid]) ? $rolelookup[$coordroleid]->shortname : '';
 
+$fullnameexpression = $DB->sql_fullname('u.firstname', 'u.lastname');
+$professors = $DB->get_records_sql(
+    "SELECT u.id, u.username, u.firstname, u.lastname
+       FROM {user} u
+      WHERE u.deleted = 0
+        AND u.suspended = 0
+        AND (" . $DB->sql_like($fullnameexpression, ':prof', false, false) . "
+             OR " . $DB->sql_like($fullnameexpression, ':profa', false, false) . "
+             OR " . $DB->sql_like($fullnameexpression, ':profeminine', false, false) . ")
+   ORDER BY u.firstname ASC, u.lastname ASC, u.username ASC",
+    [
+        'prof' => '%prof.%',
+        'profa' => '%profa.%',
+        'profeminine' => '%profª%',
+    ]
+);
+
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Dependencias');
@@ -42,7 +59,7 @@ foreach ($headers as $i => $header) {
 $example = [
     '322/2026', 'Fundamentos da Computação em Nuvem', 'professor.username', $teacherrole,
     'coordenadora.username|coordenadora2.username', $coordrole,
-    '08324762183|outro.aluno', $studentrole, '02/2026', $categoryname,
+    'aluno.username|outro.aluno', $studentrole, '02/2026', $categoryname,
 ];
 foreach ($example as $i => $value) {
     $column = Coordinate::stringFromColumnIndex($i + 1);
@@ -62,7 +79,7 @@ foreach ($widths as $column => $width) {
 $info = $spreadsheet->createSheet();
 $info->setTitle('Instrucoes');
 $instructions = [
-    ['MODELO DE DEPENDÊNCIAS'],
+    ['MODELO OFICIAL - DEPENDÊNCIAS'],
     ['Não altere os nomes das colunas da aba Dependencias.'],
     ['A linha 2 é apenas um exemplo: substitua pelos dados reais antes de importar.'],
     ['Para inserir VÁRIAS pessoas no mesmo campo, separe usernames com | (barra vertical). Ex.: prof1|prof2.'],
@@ -104,6 +121,36 @@ $info->getColumnDimension('B')->setWidth(30);
 $info->getColumnDimension('C')->setWidth(12);
 $info->getStyle('A1')->getFont()->setBold(true);
 $info->getStyle('A13')->getFont()->setBold(true);
+
+$professorssheet = $spreadsheet->createSheet();
+$professorssheet->setTitle('Professores');
+$professorssheet->setCellValueExplicit('A1', 'Nome completo', DataType::TYPE_STRING);
+$professorssheet->setCellValueExplicit('B1', 'Username', DataType::TYPE_STRING);
+$professorssheet->getStyle('A1:B1')->getFont()->setBold(true);
+
+$professorrow = 2;
+foreach ($professors as $professor) {
+    $professorssheet->setCellValueExplicit(
+        'A' . $professorrow,
+        trim($professor->firstname . ' ' . $professor->lastname),
+        DataType::TYPE_STRING
+    );
+    $professorssheet->setCellValueExplicit(
+        'B' . $professorrow,
+        (string)$professor->username,
+        DataType::TYPE_STRING
+    );
+    $professorrow++;
+}
+
+$professorslastrow = max(1, $professorrow - 1);
+$professorssheet->getStyle('A1:B' . $professorslastrow)
+    ->getNumberFormat()
+    ->setFormatCode(NumberFormat::FORMAT_TEXT);
+$professorssheet->freezePane('A2');
+$professorssheet->setAutoFilter('A1:B' . $professorslastrow);
+$professorssheet->getColumnDimension('A')->setWidth(48);
+$professorssheet->getColumnDimension('B')->setWidth(34);
 
 $spreadsheet->setActiveSheetIndex(0);
 $filename = 'modelo_dependencias.xlsx';

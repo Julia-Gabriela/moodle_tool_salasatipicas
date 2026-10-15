@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/salasatipicas/db" VERSION="2026083100" COMMENT="XMLDB file for tool_salasatipicas">
+<XMLDB PATH="admin/tool/salasatipicas/db" VERSION="2026082601" COMMENT="XMLDB file for tool_salasatipicas">
   <TABLES>
-    <TABLE NAME="tool_atyp_dep_cat" COMMENT="Configured destination categories for dependency courses">
+    <TABLE NAME="tool_salasat_dep_cat" COMMENT="Configured destination categories for dependency courses">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
@@ -21,7 +21,7 @@
         <INDEX NAME="categoryid_ix" UNIQUE="false" FIELDS="categoryid" />
       </INDEXES>
     </TABLE>
-    <TABLE NAME="tool_atyp_dep_hist" COMMENT="History and processing state for dependency course creation">
+    <TABLE NAME="tool_salasat_dep_hist" COMMENT="History and processing state for dependency course creation">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
         <FIELD NAME="processnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" />
@@ -61,7 +61,7 @@
         <INDEX NAME="timecreated_ix" UNIQUE="false" FIELDS="timecreated" />
       </INDEXES>
     </TABLE>
-    <TABLE NAME="tool_atyp_dep_part" COMMENT="Participants and role assignments requested for each dependency course">
+    <TABLE NAME="tool_salasat_dep_part" COMMENT="Participants and role assignments requested for each dependency course">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
         <FIELD NAME="historyid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" />
@@ -75,7 +75,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" />
-        <KEY NAME="history_fk" TYPE="foreign" FIELDS="historyid" REFTABLE="tool_atyp_dep_hist" REFFIELDS="id" />
+        <KEY NAME="history_fk" TYPE="foreign" FIELDS="historyid" REFTABLE="tool_salasat_dep_hist" REFFIELDS="id" />
       </KEYS>
       <INDEXES>
         <INDEX NAME="user_ix" UNIQUE="false" FIELDS="userid" />
@@ -84,7 +84,7 @@
         <INDEX NAME="history_user_role_uix" UNIQUE="true" FIELDS="historyid, userid, roleid" />
       </INDEXES>
     </TABLE>
-    <TABLE NAME="tool_atyp_rea_cat" COMMENT="Configured destination categories for REA courses">
+    <TABLE NAME="tool_salasat_rea_cat" COMMENT="Configured destination categories for REA courses">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
@@ -104,7 +104,7 @@
         <INDEX NAME="active_ix" UNIQUE="false" FIELDS="active" />
       </INDEXES>
     </TABLE>
-    <TABLE NAME="tool_atyp_rea_hist" COMMENT="REA creation requests and operational history">
+    <TABLE NAME="tool_salasat_rea_hist" COMMENT="REA creation requests and operational history">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
         <FIELD NAME="studentdisplayname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
@@ -140,7 +140,7 @@
         <INDEX NAME="createdby_ix" UNIQUE="false" FIELDS="createdby" />
       </INDEXES>
     </TABLE>
-    <TABLE NAME="tool_atyp_rea_part" COMMENT="Moodle users and roles enrolled by one REA request">
+    <TABLE NAME="tool_salasat_rea_part" COMMENT="Moodle users and roles enrolled by one REA request">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
         <FIELD NAME="historyid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
@@ -154,7 +154,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" />
-        <KEY NAME="history_fk" TYPE="foreign" FIELDS="historyid" REFTABLE="tool_atyp_rea_hist" REFFIELDS="id" />
+        <KEY NAME="history_fk" TYPE="foreign" FIELDS="historyid" REFTABLE="tool_salasat_rea_hist" REFFIELDS="id" />
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid_ix" UNIQUE="false" FIELDS="userid" />

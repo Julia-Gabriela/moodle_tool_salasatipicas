@@ -17,6 +17,10 @@ $PAGE->set_url(new moodle_url('/admin/tool/salasatipicas/dependency_history.php'
 $PAGE->set_title(get_string('dep_history', 'tool_salasatipicas'));
 $PAGE->set_heading(get_string('dep_history', 'tool_salasatipicas'));
 $PAGE->requires->css(new moodle_url('/admin/tool/salasatipicas/styles.css'));
+$PAGE->requires->js_call_amd('tool_salasatipicas/copy_course_link', 'init', [[
+    'copied' => get_string('dep_linkcopied', 'tool_salasatipicas'),
+    'failed' => get_string('dep_copylinkfailed', 'tool_salasatipicas'),
+]]);
 
 // Refresh only lightweight status/enrolment information; never run backup/restore here.
 manager::refresh_history_statuses();
@@ -27,7 +31,7 @@ $perpage = 50;
 echo $OUTPUT->header();
 
 if ($queuedid > 0) {
-    $queuedhistory = $DB->get_record('tool_atyp_dep_hist', ['id' => $queuedid], 'id,targetfullname,status');
+    $queuedhistory = $DB->get_record('tool_salasat_dep_hist', ['id' => $queuedid], 'id,targetfullname,status');
     if ($queuedhistory) {
         echo $OUTPUT->notification(
             get_string('dep_dependencyworkerstarted', 'tool_salasatipicas', $queuedhistory->targetfullname),
@@ -35,14 +39,14 @@ if ($queuedid > 0) {
         );
     }
 }
-echo html_writer::start_div('salasat-dep-toolbar');
+echo html_writer::start_div('salasdep-toolbar');
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/index.php'), '← ' . get_string('backtocentral', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/dependency.php'),
     '← ' . get_string('dep_backtomanage', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::end_div();
 
-$totalrecords = $DB->count_records('tool_atyp_dep_hist');
-$records = $DB->get_records('tool_atyp_dep_hist', null, 'timecreated DESC', '*', $page * $perpage, $perpage);
+$totalrecords = $DB->count_records('tool_salasat_dep_hist');
+$records = $DB->get_records('tool_salasat_dep_hist', null, 'timecreated DESC', '*', $page * $perpage, $perpage);
 $participantmap = manager::get_participants_for_histories(array_keys($records));
 $hasactiveworker = false;
 foreach ($records as $record) {
@@ -60,6 +64,7 @@ if (!$records) {
         \core\output\notification::NOTIFY_INFO);
 } else {
     $table = new html_table();
+    $table->attributes['class'] = 'generaltable salasdep-history-table';
     $table->head = [
         get_string('date'),
         get_string('dep_processnumber', 'tool_salasatipicas'),
@@ -69,15 +74,29 @@ if (!$records) {
         get_string('dep_source', 'tool_salasatipicas'),
         get_string('dep_status', 'tool_salasatipicas'),
         get_string('dep_details', 'tool_salasatipicas'),
+        get_string('dep_courselink', 'tool_salasatipicas'),
     ];
     foreach ($records as $record) {
         $detail = s((string)$record->message);
         if ((int)$record->retrycount > 0) {
             $detail .= '<br><small>' . get_string('dep_retrycountlabel', 'tool_salasatipicas', (int)$record->retrycount) . '</small>';
         }
-        if ($record->targetcourseid && $record->status === manager::STATUS_READY) {
-            $courseurl = new moodle_url('/course/view.php', ['id' => $record->targetcourseid]);
-            $detail .= '<br>' . html_writer::link($courseurl, get_string('dep_opencourse', 'tool_salasatipicas'));
+        $coursebutton = '—';
+        if ((int)$record->targetcourseid > 0 && $record->status === manager::STATUS_READY) {
+            $courseurl = new moodle_url('/course/view.php', ['id' => (int)$record->targetcourseid]);
+            $coursebutton = html_writer::link($courseurl, get_string('dep_opencourse', 'tool_salasatipicas'), [
+                'class' => 'btn btn-sm btn-primary salasdep-open-course',
+            ]);
+            $coursebutton .= html_writer::tag('button', get_string('dep_copylink', 'tool_salasatipicas'), [
+                'type' => 'button',
+                'class' => 'btn btn-sm btn-outline-primary salasdep-copy-link',
+                'data-course-url' => $courseurl->out(false),
+                'disabled' => 'disabled',
+            ]);
+            $coursebutton .= html_writer::tag('span', '', [
+                'class' => 'salasdep-copy-feedback', 'role' => 'status', 'aria-live' => 'polite',
+            ]);
+            $coursebutton = html_writer::div($coursebutton, 'salasdep-course-actions');
         }
         if ((string)$record->status === manager::STATUS_ERROR) {
             $detail .= html_writer::start_tag('form', [
@@ -92,7 +111,7 @@ if (!$records) {
             ]);
             $detail .= html_writer::end_tag('form');
         }
-        $statusclass = 'salasat-dep-status salasat-dep-status-' . preg_replace('/[^a-z0-9_-]/', '', (string)$record->status);
+        $statusclass = 'salasdep-status salasdep-status-' . preg_replace('/[^a-z0-9_-]/', '', (string)$record->status);
         $statushtml = html_writer::span(manager::status_label($record->status), $statusclass);
         $participants = $participantmap[(int)$record->id] ?? manager::get_history_participants((int)$record->id, true);
         $studentsummary = manager::participants_summary($participants, 'student');
@@ -115,9 +134,12 @@ if (!$records) {
             s(strtoupper($record->source)),
             $statushtml,
             $detail,
+            $coursebutton,
         ];
     }
+    echo html_writer::start_div('salasdep-history-wrap');
     echo html_writer::table($table);
+    echo html_writer::end_div();
     echo $OUTPUT->paging_bar($totalrecords, $page, $perpage, $PAGE->url);
 }
 

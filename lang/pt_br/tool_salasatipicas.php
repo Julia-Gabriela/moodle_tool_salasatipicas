@@ -1,4 +1,10 @@
 <?php
+$string['dep_copylink'] = 'Copiar link';
+$string['dep_linkcopied'] = 'Link copiado!';
+$string['dep_copylinkfailed'] = 'Não foi possível copiar. Tente novamente ou copie pelo botão Abrir sala com o botão direito.';
+$string['dep_importencodingerror'] = 'Não foi possível ler a codificação da planilha sem perda de caracteres. Salve novamente o original como CSV UTF-8 ou utilize o modelo XLSX.';
+$string['dep_importdamagedtext'] = 'A linha {$a} contém texto corrompido (caractere �). Corrija o arquivo original e envie novamente. Nenhuma sala foi criada por esta importação.';
+$string['dep_courselink'] = 'Sala';
 $string['pluginname'] = 'Salas Atípicas';
 $string['manage'] = 'Gerenciar salas atípicas';
 $string['siteadminonly'] = 'Este recurso é exclusivo para administradores do site.';
@@ -14,8 +20,8 @@ $string['backtocentral'] = 'Voltar para Salas Atípicas';
 $string['type'] = 'Tipo';
 $string['reference'] = 'Referência';
 $string['course'] = 'Sala';
-$string['oldpluginsnotice'] = 'Use esta central como ponto único para criação de Dependências e REA.';
-$string['importedconfiginfo'] = 'As configurações de Dependências e REA são independentes e podem ser ajustadas nesta central.';
+$string['oldpluginsnotice'] = 'Configure categorias e templates antes de iniciar a criação de salas.';
+$string['importedconfiginfo'] = 'Esta edição usa configurações e históricos próprios, sem importar dados de outros componentes.';
 $string['privacy:metadata'] = 'A ferramenta armazena histórico operacional de criações de Dependência e REA e snapshots dos participantes matriculados.';
 $string['privacy:metadata:core_log'] = 'O plugin registra eventos administrativos no sistema de logs do Moodle para auditoria.';
 $string['salasatipicas:manage'] = 'Gerenciar salas atípicas';
@@ -27,7 +33,7 @@ $string['salasatipicas:manage'] = 'Gerenciar salas atípicas';
 $string['dep_pluginname'] = 'Dependências';
 $string['dep_siteadminonly'] = 'Este recurso é exclusivo para administradores do site.';
 $string['dep_manage'] = 'Gerenciar dependências';
-$string['dep_intro'] = 'Crie salas de dependência manualmente ou por CSV/XLSX. A criação usa um worker PHP CLI independente para copiar o template sem executar backup/restore na requisição do navegador.';
+$string['dep_intro'] = 'Crie salas de dependência manualmente ou por CSV/XLSX. A criação usa cópia síncrona do template: a sala fica pronta antes da operação ser concluída, sem depender de tarefas ad hoc do Moodle.';
 $string['dep_settings'] = 'Configurações de dependências';
 $string['dep_settingsbutton'] = '⚙ Configurações';
 $string['dep_history'] = 'Histórico';
@@ -546,4 +552,4 @@ $string['rea_privacy:metadata:participant:fullname'] = 'Nome completo do usuári
 $string['rea_privacy:metadata:participant:type'] = 'Tipo de participante.';
 $string['rea_privacy:metadata:participant:roleid'] = 'Papel atribuído no curso.';
 
-$string['rea_salasatipicas:manage'] = 'Gerenciar salas REA';
+$string['rea_salasrea:manage'] = 'Gerenciar salas REA';

@@ -30,7 +30,7 @@ function tool_salasatipicas_json(array $data): void {
 if ($action === 'status') {
     require_sesskey();
     $historyid = required_param('historyid', PARAM_INT);
-    $history = $DB->get_record('tool_atyp_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
+    $history = $DB->get_record('tool_salasat_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
 
     $complete = in_array((string)$history->status, [manager::STATUS_READY, manager::STATUS_ERROR], true);
     tool_salasatipicas_json([
@@ -104,7 +104,7 @@ if ($action === 'processrow') {
         }
 
         $historyid = manager::create_dependency_request($prepared['definition'], (string)$payload['source']);
-        $history = $DB->get_record('tool_atyp_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
+        $history = $DB->get_record('tool_salasat_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
         $result['ok'] = true;
         $result['queued'] = true;
         $result['courseid'] = 0;
@@ -207,7 +207,7 @@ $PAGE->requires->js_call_amd('tool_salasatipicas/import_runner', 'init', [[
 
 echo $OUTPUT->header();
 
-echo html_writer::start_div('salasat-dep-toolbar');
+echo html_writer::start_div('salasdep-toolbar');
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/dependency.php'),
     '← ' . get_string('dep_backtomanage', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::end_div();
@@ -215,13 +215,13 @@ echo html_writer::end_div();
 echo $OUTPUT->notification(get_string('dep_workerimportnotice', 'tool_salasatipicas'),
     \core\output\notification::NOTIFY_INFO);
 
-echo html_writer::start_div('salasat-dep-preview salasat-dep-import-runner', ['id' => 'salasat-dep-import-runner']);
+echo html_writer::start_div('salasdep-preview salasdep-import-runner', ['id' => 'salasdep-import-runner']);
 echo html_writer::tag('h3', get_string('dep_importprocesstitle', 'tool_salasatipicas'));
 echo html_writer::tag('p', get_string('dep_importworkerprocessdescription', 'tool_salasatipicas', $total));
 
-echo html_writer::start_div('progress salasat-dep-progress-wrap');
+echo html_writer::start_div('progress salasdep-progress-wrap');
 echo html_writer::div('', 'progress-bar progress-bar-striped progress-bar-animated', [
-    'id' => 'salasat-dep-progress-bar',
+    'id' => 'salasdep-progress-bar',
     'role' => 'progressbar',
     'style' => 'width: 0%',
     'aria-valuemin' => '0',
@@ -232,14 +232,14 @@ echo html_writer::end_div();
 
 echo html_writer::div(
     get_string('dep_importprogresscount', 'tool_salasatipicas', (object)['completed' => 0, 'total' => $total]),
-    'salasat-dep-progress-label mt-2',
-    ['id' => 'salasat-dep-progress-label']
+    'salasdep-progress-label mt-2',
+    ['id' => 'salasdep-progress-label']
 );
 echo html_writer::div(get_string('dep_importworkerprocessing', 'tool_salasatipicas'), 'alert alert-info mt-3', [
-    'id' => 'salasat-dep-import-status',
+    'id' => 'salasdep-import-status',
 ]);
-echo html_writer::tag('div', '', ['id' => 'salasat-dep-import-results', 'class' => 'mt-3']);
-echo html_writer::tag('div', '', ['id' => 'salasat-dep-import-actions', 'class' => 'mt-3']);
+echo html_writer::tag('div', '', ['id' => 'salasdep-import-results', 'class' => 'mt-3']);
+echo html_writer::tag('div', '', ['id' => 'salasdep-import-actions', 'class' => 'mt-3']);
 echo html_writer::end_div();
 
 echo $OUTPUT->footer();

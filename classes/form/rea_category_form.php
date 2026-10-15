@@ -27,7 +27,7 @@ class rea_category_form extends \moodleform {
         if ($categoryid <= 0 || !$DB->record_exists('course_categories', ['id' => $categoryid])) { $errors['categoryid'] = get_string('rea_invalidmoodlecategory', 'tool_salasatipicas'); }
         if ($templateid > 0 && !$DB->record_exists('course', ['id' => $templateid])) { $errors['templatecourseid'] = get_string('rea_invalidtemplatecourse', 'tool_salasatipicas'); }
         if ($name !== '') {
-            $existing = $DB->get_record('tool_atyp_rea_cat', ['name' => $name]);
+            $existing = $DB->get_record('tool_salasat_rea_cat', ['name' => $name]);
             if ($existing && (int)$existing->id !== $id) { $errors['name'] = get_string('rea_categorynameexists', 'tool_salasatipicas'); }
         }
         return $errors;

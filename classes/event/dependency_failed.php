@@ -7,7 +7,7 @@ class dependency_failed extends \core\event\base {
     protected function init(): void {
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = 'tool_atyp_dep_hist';
+        $this->data['objecttable'] = 'tool_salasat_dep_hist';
     }
     public static function get_name(): string {
         return get_string('dep_eventdependencyfailed', 'tool_salasatipicas');

@@ -55,7 +55,7 @@ class dependency_category_form extends \moodleform {
             $errors['templatecourseid'] = get_string('dep_invalidtemplatecourse', 'tool_salasatipicas');
         }
         if ($name !== '') {
-            $existing = $DB->get_record('tool_atyp_dep_cat', ['name' => $name]);
+            $existing = $DB->get_record('tool_salasat_dep_cat', ['name' => $name]);
             if ($existing && (int)$existing->id !== $id) {
                 $errors['name'] = get_string('dep_categorynameexists', 'tool_salasatipicas');
             }

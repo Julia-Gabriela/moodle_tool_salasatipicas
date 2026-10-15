@@ -13,7 +13,7 @@ require_capability('tool/salasatipicas:manage', context_system::instance());
 require_sesskey();
 
 $categories = manager::get_categories(true);
-$categoryname = $categories ? reset($categories)->name : 'Graduação';
+$categoryname = $categories ? reset($categories)->name : 'Categoria de exemplo';
 $teacherroleid = (int)manager::get_config_value('teacherroleid', manager::role_id_by_shortname('editingteacher'));
 $studentroleid = (int)manager::get_config_value('studentroleid', manager::role_id_by_shortname('student'));
 $coordroleid = (int)manager::get_config_value('coordinationroleid', $teacherroleid);
@@ -37,7 +37,7 @@ fputcsv($out, [
 fputcsv($out, [
     '322/2026', 'Fundamentos da Computação em Nuvem', 'professor.username', $teacherrole,
     'coordenadora.username|coordenadora2.username', $coordrole,
-    '08324762183|outro.aluno', $studentrole, '02/2026', $categoryname,
+    'aluno.username|outro.aluno', $studentrole, '02/2026', $categoryname,
 ], ';');
 fclose($out);
 exit;

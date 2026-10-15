@@ -16,12 +16,12 @@ $page = optional_param('page', 0, PARAM_INT); $perpage = 50;
 
 echo $OUTPUT->header();
 if ($queuedid) { echo $OUTPUT->notification(get_string('rea_reaworkerstarted', 'tool_salasatipicas'), \core\output\notification::NOTIFY_SUCCESS); }
-echo html_writer::start_div('salasat-rea-toolbar');
+echo html_writer::start_div('salasrea-toolbar');
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/index.php'), '← ' . get_string('backtocentral', 'tool_salasatipicas'), ['class' => 'btn btn-secondary']);
 echo html_writer::link(new moodle_url('/admin/tool/salasatipicas/rea.php'), '← ' . get_string('rea_backtomanage', 'tool_salasatipicas'), ['class'=>'btn btn-secondary']);
 echo html_writer::end_div();
-$total = $DB->count_records('tool_atyp_rea_hist');
-$records = $DB->get_records('tool_atyp_rea_hist', null, 'timecreated DESC', '*', $page*$perpage, $perpage);
+$total = $DB->count_records('tool_salasat_rea_hist');
+$records = $DB->get_records('tool_salasat_rea_hist', null, 'timecreated DESC', '*', $page*$perpage, $perpage);
 $participantmap = manager::get_participants_for_histories(array_keys($records));
 $active = false;
 foreach ($records as $record) { if (in_array($record->status, [manager::STATUS_QUEUED, manager::STATUS_PROCESSING], true)) { $active = true; break; } }
@@ -39,7 +39,7 @@ if (!$records) {
         if ($record->targetcourseid && $record->status === manager::STATUS_READY) {
             $details .= '<br>' . html_writer::link(new moodle_url('/course/view.php',['id'=>$record->targetcourseid]), get_string('rea_opencourse', 'tool_salasatipicas'));
         }
-        $table->data[] = [userdate($record->timecreated), s($record->studentdisplayname), s($record->courseprogram), s($record->period), nl2br(s(implode("\n", $subjectnames))), nl2br(s(manager::participants_summary($participants))), html_writer::span(manager::status_label($record->status), 'salasat-rea-status salasat-rea-status-' . $record->status), $details];
+        $table->data[] = [userdate($record->timecreated), s($record->studentdisplayname), s($record->courseprogram), s($record->period), nl2br(s(implode("\n", $subjectnames))), nl2br(s(manager::participants_summary($participants))), html_writer::span(manager::status_label($record->status), 'salasrea-status salasrea-status-' . $record->status), $details];
     }
     echo html_writer::table($table);
     echo $OUTPUT->paging_bar($total, $page, $perpage, $PAGE->url);

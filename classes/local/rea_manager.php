@@ -28,7 +28,7 @@ class rea_manager {
 
     public static function get_categories(bool $activeonly = true): array {
         global $DB;
-        return $DB->get_records('tool_atyp_rea_cat', $activeonly ? ['active' => 1] : [], 'sortorder ASC, name ASC');
+        return $DB->get_records('tool_salasat_rea_cat', $activeonly ? ['active' => 1] : [], 'sortorder ASC, name ASC');
     }
 
     public static function get_category_options(): array {
@@ -115,7 +115,7 @@ class rea_manager {
             $errors[] = get_string('rea_invalidclassgroup', 'tool_salasatipicas');
         }
 
-        $category = $DB->get_record('tool_atyp_rea_cat', ['id' => (int)$data['categoryconfigid'], 'active' => 1]);
+        $category = $DB->get_record('tool_salasat_rea_cat', ['id' => (int)$data['categoryconfigid'], 'active' => 1]);
         if (!$category) {
             $errors[] = get_string('rea_invalidconfiguredcategory', 'tool_salasatipicas');
         } else if (!$DB->record_exists('course_categories', ['id' => $category->categoryid])) {
@@ -221,7 +221,7 @@ class rea_manager {
             $errors[] = get_string('rea_invalidgeneratedshortname', 'tool_salasatipicas');
         }
         if ($DB->record_exists('course', ['shortname' => $shortname]) ||
-                $DB->record_exists_select('tool_atyp_rea_hist', 'targetshortname = ? AND status <> ?', [$shortname, self::STATUS_ERROR])) {
+                $DB->record_exists_select('tool_salasat_rea_hist', 'targetshortname = ? AND status <> ?', [$shortname, self::STATUS_ERROR])) {
             $errors[] = get_string('rea_duplicatecourse', 'tool_salasatipicas', $shortname);
         }
         if ($errors) {
@@ -344,12 +344,12 @@ class rea_manager {
         }
         try {
             if ($DB->record_exists('course', ['shortname' => $definition['targetshortname']]) ||
-                    $DB->record_exists_select('tool_atyp_rea_hist', 'targetshortname = ? AND status <> ?', [$definition['targetshortname'], self::STATUS_ERROR])) {
+                    $DB->record_exists_select('tool_salasat_rea_hist', 'targetshortname = ? AND status <> ?', [$definition['targetshortname'], self::STATUS_ERROR])) {
                 throw new \moodle_exception('rea_duplicatecourse', 'tool_salasatipicas', '', $definition['targetshortname']);
             }
             $now = time();
             $transaction = $DB->start_delegated_transaction();
-            $historyid = $DB->insert_record('tool_atyp_rea_hist', (object)[
+            $historyid = $DB->insert_record('tool_salasat_rea_hist', (object)[
                 'studentdisplayname' => $definition['studentdisplayname'],
                 'courseprogram' => $definition['courseprogram'],
                 'phone' => $definition['phone'],
@@ -374,7 +374,7 @@ class rea_manager {
                 'timemodified' => $now,
             ]);
             foreach ($definition['participants'] as $participant) {
-                $DB->insert_record('tool_atyp_rea_part', (object)[
+                $DB->insert_record('tool_salasat_rea_part', (object)[
                     'historyid' => $historyid,
                     'userid' => $participant['userid'],
                     'username' => $participant['username'],
@@ -561,7 +561,7 @@ class rea_manager {
                 $pid = (int)trim($output);
             }
         }
-        $DB->update_record('tool_atyp_rea_hist', (object)[
+        $DB->update_record('tool_salasat_rea_hist', (object)[
             'id' => $historyid,
             'message' => get_string('rea_workerstarted', 'tool_salasatipicas') . ($pid > 0 ? ' PID ' . $pid . '.' : ''),
             'timemodified' => time(),
@@ -588,6 +588,8 @@ class rea_manager {
             return;
         }
         $globallock = null;
+        $legacydeplock = null;
+        $legacyrealock = null;
         $targetlock = null;
         $bc = null;
         $rc = null;
@@ -596,7 +598,7 @@ class rea_manager {
         $targetcourseid = 0;
 
         try {
-            $history = $DB->get_record('tool_atyp_rea_hist', ['id' => $historyid], '*', MUST_EXIST);
+            $history = $DB->get_record('tool_salasat_rea_hist', ['id' => $historyid], '*', MUST_EXIST);
             if (in_array($history->status, [self::STATUS_READY, self::STATUS_ERROR], true)) {
                 return;
             }
@@ -606,6 +608,18 @@ class rea_manager {
                 throw new \moodle_exception('rea_workerbusytimeout', 'tool_salasatipicas');
             }
 
+            // Respect the same global locks used by the legacy plugins while they coexist
+            // during homologation, avoiding parallel backup/restore across components.
+            $legacydepfactory = \core\lock\lock_config::get_lock_factory('tool_salasdependencias');
+            $legacyreafactory = \core\lock\lock_config::get_lock_factory('tool_salasrea');
+            $legacydeplock = $legacydepfactory->get_lock('global_creation_worker', HOURSECS);
+            if (!$legacydeplock) {
+                throw new \moodle_exception('rea_workerbusytimeout', 'tool_salasatipicas');
+            }
+            $legacyrealock = $legacyreafactory->get_lock('global_creation_worker', HOURSECS);
+            if (!$legacyrealock) {
+                throw new \moodle_exception('rea_workerbusytimeout', 'tool_salasatipicas');
+            }
             $targetlock = $factory->get_lock('target_' . sha1((string)$history->targetshortname), 60);
             if (!$targetlock) {
                 throw new \moodle_exception('rea_targetbusy', 'tool_salasatipicas');
@@ -629,7 +643,7 @@ class rea_manager {
                 throw new \moodle_exception('rea_subjectsmissing', 'tool_salasatipicas');
             }
 
-            $DB->update_record('tool_atyp_rea_hist', (object)[
+            $DB->update_record('tool_salasat_rea_hist', (object)[
                 'id' => $historyid,
                 'status' => self::STATUS_PROCESSING,
                 'message' => get_string('rea_workerprocessing', 'tool_salasatipicas'),
@@ -666,7 +680,7 @@ class rea_manager {
             $usersetting->set_status(\backup_setting::NOT_LOCKED);
             $usersetting->set_value('0');
             $backupid = $bc->get_backupid();
-            $DB->set_field('tool_atyp_rea_hist', 'backupid', $backupid, ['id' => $historyid]);
+            $DB->set_field('tool_salasat_rea_hist', 'backupid', $backupid, ['id' => $historyid]);
             $bc->execute_plan();
             if ($bc->get_status() !== \backup::STATUS_FINISHED_OK) {
                 throw new \moodle_exception('rea_syncbackupfailed', 'tool_salasatipicas');
@@ -684,7 +698,7 @@ class rea_manager {
             self::update_history_message($historyid, get_string('rea_synccreatecourse', 'tool_salasatipicas'));
             [$placeholderfullname, $placeholdershortname] = \restore_dbops::calculate_course_names(0, get_string('copyingcourse', 'backup'), get_string('copyingcourseshortname', 'backup'));
             $targetcourseid = (int)\restore_dbops::create_new_course($placeholderfullname, $placeholdershortname, (int)$history->coursecategoryid);
-            $DB->set_field('tool_atyp_rea_hist', 'targetcourseid', $targetcourseid, ['id' => $historyid]);
+            $DB->set_field('tool_salasat_rea_hist', 'targetcourseid', $targetcourseid, ['id' => $historyid]);
 
             self::update_history_message($historyid, get_string('rea_syncrestore', 'tool_salasatipicas'));
             $rc = new \restore_controller(
@@ -701,7 +715,7 @@ class rea_manager {
             $rc->set_execution(\backup::EXECUTION_INMEDIATE);
             $rc->prepare_copy();
             $restoreid = $rc->get_restoreid();
-            $DB->set_field('tool_atyp_rea_hist', 'restoreid', $restoreid, ['id' => $historyid]);
+            $DB->set_field('tool_salasat_rea_hist', 'restoreid', $restoreid, ['id' => $historyid]);
             $plan = $rc->get_plan();
             $plan->get_setting('course_startdate')->set_value($copydata->startdate);
             $plan->get_setting('course_fullname')->set_value($copydata->fullname);
@@ -737,7 +751,7 @@ class rea_manager {
 
             rebuild_course_cache($targetcourseid, true);
             \cache_helper::purge_by_event('changesincourse');
-            $DB->update_record('tool_atyp_rea_hist', (object)[
+            $DB->update_record('tool_salasat_rea_hist', (object)[
                 'id' => $historyid,
                 'status' => self::STATUS_READY,
                 'message' => get_string('rea_reaready', 'tool_salasatipicas'),
@@ -753,8 +767,8 @@ class rea_manager {
                     $cleanuperror = ' | Cleanup: ' . $cleanup->getMessage();
                 }
             }
-            if ($DB->record_exists('tool_atyp_rea_hist', ['id' => $historyid])) {
-                $DB->update_record('tool_atyp_rea_hist', (object)[
+            if ($DB->record_exists('tool_salasat_rea_hist', ['id' => $historyid])) {
+                $DB->update_record('tool_salasat_rea_hist', (object)[
                     'id' => $historyid,
                     'targetcourseid' => $targetcourseid,
                     'status' => self::STATUS_ERROR,
@@ -777,6 +791,8 @@ class rea_manager {
                 try { fulldelete($backupbasepath); } catch (\Throwable $ignored) {}
             }
             if ($targetlock) { $targetlock->release(); }
+            if ($legacyrealock) { $legacyrealock->release(); }
+            if ($legacydeplock) { $legacydeplock->release(); }
             if ($globallock) { $globallock->release(); }
             $lock->release();
         }
@@ -1097,7 +1113,7 @@ class rea_manager {
 
     public static function get_history_participants(int $historyid): array {
         global $DB;
-        return array_values($DB->get_records('tool_atyp_rea_part', ['historyid' => $historyid], 'sortorder ASC, id ASC'));
+        return array_values($DB->get_records('tool_salasat_rea_part', ['historyid' => $historyid], 'sortorder ASC, id ASC'));
     }
 
     public static function get_participants_for_histories(array $ids): array {
@@ -1105,7 +1121,7 @@ class rea_manager {
         $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
         if (!$ids) { return []; }
         [$insql, $params] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'hid');
-        $rows = $DB->get_records_select('tool_atyp_rea_part', "historyid {$insql}", $params, 'historyid ASC, sortorder ASC, id ASC');
+        $rows = $DB->get_records_select('tool_salasat_rea_part', "historyid {$insql}", $params, 'historyid ASC, sortorder ASC, id ASC');
         $out = [];
         foreach ($rows as $row) { $out[(int)$row->historyid][] = $row; }
         return $out;
@@ -1133,6 +1149,6 @@ class rea_manager {
 
     private static function update_history_message(int $historyid, string $message): void {
         global $DB;
-        $DB->update_record('tool_atyp_rea_hist', (object)['id' => $historyid, 'message' => $message, 'timemodified' => time()]);
+        $DB->update_record('tool_salasat_rea_hist', (object)['id' => $historyid, 'message' => $message, 'timemodified' => time()]);
     }
 }

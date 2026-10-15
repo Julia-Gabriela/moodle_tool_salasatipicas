@@ -1,4 +1,10 @@
 <?php
+$string['dep_copylink'] = 'Copy link';
+$string['dep_linkcopied'] = 'Link copied!';
+$string['dep_copylinkfailed'] = 'Could not copy. Try again or right-click Open course to copy its link.';
+$string['dep_importencodingerror'] = 'The spreadsheet encoding could not be read without character loss. Save the original again as UTF-8 CSV or use the XLSX template.';
+$string['dep_importdamagedtext'] = 'Row {$a} contains damaged text (� replacement character). Correct the original file and upload it again. No course was created by this import.';
+$string['dep_courselink'] = 'Course';
 $string['pluginname'] = 'Atypical Courses';
 $string['manage'] = 'Manage atypical courses';
 $string['siteadminonly'] = 'This feature is restricted to site administrators.';
@@ -14,8 +20,8 @@ $string['backtocentral'] = 'Back to Atypical Courses';
 $string['type'] = 'Type';
 $string['reference'] = 'Reference';
 $string['course'] = 'Course';
-$string['oldpluginsnotice'] = 'Use this central tool as the single entry point for Dependency and REA course creation.';
-$string['importedconfiginfo'] = 'Dependency and REA settings are independent and can be managed from this central tool.';
+$string['oldpluginsnotice'] = 'Configure categories and templates before creating courses.';
+$string['importedconfiginfo'] = 'This edition uses its own settings and history without importing data from other components.';
 $string['privacy:metadata'] = 'The tool stores operational creation history for Dependency and REA courses and snapshots of enrolled participants.';
 $string['privacy:metadata:core_log'] = 'The plugin writes administrative events to Moodle logs for auditing.';
 $string['salasatipicas:manage'] = 'Manage atypical courses';
@@ -24,7 +30,7 @@ $string['salasatipicas:manage'] = 'Manage atypical courses';
 // Dependency module strings.
 // This file is part of Moodle - http://moodle.org/
 
-$string['dep_pluginname'] = 'Dependencies';
+$string['dep_pluginname'] = 'dependencies';
 $string['dep_siteadminonly'] = 'This feature is restricted to site administrators.';
 $string['dep_manage'] = 'Manage dependencies';
 $string['dep_intro'] = 'Validate dependency course data manually or from CSV/XLSX. Real course creation is only available after a site administrator explicitly enables it in Settings.';
@@ -530,7 +536,7 @@ $string['rea_privacy:metadata:participant:fullname'] = 'Nome completo do usuári
 $string['rea_privacy:metadata:participant:type'] = 'Tipo de participante.';
 $string['rea_privacy:metadata:participant:roleid'] = 'Papel atribuído no curso.';
 
-$string['rea_salasatipicas:manage'] = 'Manage REA rooms';
+$string['rea_salasrea:manage'] = 'Manage REA rooms';
 
 $string['rea_namingdataheader'] = 'Course naming data';
 $string['rea_processnumber'] = 'Process number';

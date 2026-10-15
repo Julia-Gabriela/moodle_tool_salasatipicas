@@ -14,7 +14,7 @@ const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
 const createResultRow = (result) => {
     const wrapper = document.createElement('div');
-    wrapper.className = 'salasat-dep-import-result ' + (result.ok ? 'salasat-dep-import-ok' : 'salasat-dep-import-error');
+    wrapper.className = 'salasdep-import-result ' + (result.ok ? 'salasdep-import-ok' : 'salasdep-import-error');
 
     const icon = document.createElement('strong');
     icon.textContent = result.ok ? '✓ ' : '✕ ';
@@ -34,8 +34,8 @@ const createResultRow = (result) => {
 };
 
 const setProgress = (completed, total) => {
-    const bar = document.getElementById('salasat-dep-progress-bar');
-    const label = document.getElementById('salasat-dep-progress-label');
+    const bar = document.getElementById('salasdep-progress-bar');
+    const label = document.getElementById('salasdep-progress-label');
     if (bar) {
         const percent = total > 0 ? Math.round((completed / total) * 100) : 100;
         bar.style.width = `${percent}%`;
@@ -47,7 +47,7 @@ const setProgress = (completed, total) => {
 };
 
 const renderActions = (config) => {
-    const actions = document.getElementById('salasat-dep-import-actions');
+    const actions = document.getElementById('salasdep-import-actions');
     if (!actions) {
         return;
     }
@@ -114,7 +114,7 @@ const waitForHistory = async(config, historyid) => {
 };
 
 export const init = async(config) => {
-    const status = document.getElementById('salasat-dep-import-status');
+    const status = document.getElementById('salasdep-import-status');
     let running = true;
     const leaveWarning = (event) => {
         if (!running) {
@@ -124,7 +124,7 @@ export const init = async(config) => {
         event.returnValue = '';
     };
     window.addEventListener('beforeunload', leaveWarning);
-    const results = document.getElementById('salasat-dep-import-results');
+    const results = document.getElementById('salasdep-import-results');
     const total = config.total || 0;
     let success = 0;
     let failed = 0;

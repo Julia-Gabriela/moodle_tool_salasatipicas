@@ -22,7 +22,7 @@ require_capability('tool/salasatipicas:manage', context_system::instance());
 require_sesskey();
 
 $historyid = required_param('historyid', PARAM_INT);
-$DB->get_record('tool_atyp_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
+$DB->get_record('tool_salasat_dep_hist', ['id' => $historyid], '*', MUST_EXIST);
 
 try {
     manager::assert_worker_available();

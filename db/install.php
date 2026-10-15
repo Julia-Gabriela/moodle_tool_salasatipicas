@@ -3,10 +3,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Fresh-install defaults for tool_salasatipicas.
- *
- * This hook only stores lightweight configuration defaults. It never launches
- * workers, backup/restore, cron or ad-hoc tasks.
+ * Fresh-install defaults. This function performs default configuration only.
+ * It never launches CLI workers, backup/restore, cron, or ad-hoc tasks.
  */
 function xmldb_tool_salasatipicas_install(): void {
     global $DB;
@@ -14,7 +12,8 @@ function xmldb_tool_salasatipicas_install(): void {
     $studentroleid = (int)$DB->get_field('role', 'id', ['shortname' => 'student'], IGNORE_MISSING);
     $teacherroleid = (int)$DB->get_field('role', 'id', ['shortname' => 'editingteacher'], IGNORE_MISSING);
 
-    $dependencydefaults = [
+    // Dependency defaults: independent configuration.
+    $depdefaults = [
         'creationenabled' => 1,
         'fullnamepattern' => 'PROCESSO N°{PROCESSO} - {DISCIPLINA} - Prof. {PROFESSOR} - {PERIODO} - Dependência',
         'shortnamepattern' => 'PROCESSO N°{PROCESSO} - {DISCIPLINA} - Prof. {PROFESSOR} - {PERIODO} - Dependência',
@@ -24,10 +23,11 @@ function xmldb_tool_salasatipicas_install(): void {
         'coordinationroleid' => $teacherroleid,
         'coursevisible' => 0,
     ];
-    foreach ($dependencydefaults as $key => $value) {
-        set_config('dep_' . $key, $value, 'tool_salasatipicas');
+    foreach ($depdefaults as $key => $default) {
+        set_config('dep_' . $key, $default, 'tool_salasatipicas');
     }
 
+    // REA defaults: independent configuration.
     $readefaults = [
         'creationenabled' => 1,
         'fullnamepattern' => 'PROCESSO N° {PROCESSO} - {ALUNO} - {SIGLA_CURSO}- {TURNO}{SEMESTRE}{TURMA} - {PERIODO_CURTO} - REA',
@@ -42,7 +42,8 @@ function xmldb_tool_salasatipicas_install(): void {
         'assignmentmarker' => 'Entrega da Atividade REA - Disciplina',
         'studentsectionmarker' => 'Aluno: xxx',
     ];
-    foreach ($readefaults as $key => $value) {
-        set_config('rea_' . $key, $value, 'tool_salasatipicas');
+    foreach ($readefaults as $key => $default) {
+        set_config('rea_' . $key, $default, 'tool_salasatipicas');
     }
+
 }
